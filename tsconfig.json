@@ -14,7 +14,7 @@
     "strictNullChecks": true,
     "traceResolution": false,
 
-    "lib": ["esnext", "esnext.array", "esnext.asynciterable"],
+    "lib": ["dom", "dom.iterable", "esnext", "esnext.array", "esnext.asynciterable"],
     "moduleResolution": "node",
     "module": "esnext",
     "target": "esnext",
