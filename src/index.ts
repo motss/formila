@@ -1,14 +1,16 @@
 // @ts-check
 
 export declare interface FormilaDataFieldsetField {
+  // type: string;
+  // attrs: {
+  //   [key: string]: string | number | boolean;
+  // };
   isPrefixed: boolean;
-  attrs: {
-    [key: string]: string | number | boolean;
-  };
+  fieldTag: string;
   description: string;
   errorMessage: string;
-  validateFn: (el: HTMLInputElement) => boolean;
-  eventHandler: (el: HTMLInputElement) => void;
+  // validateFn: (el: HTMLInputElement) => boolean;
+  // eventHandler: (el: HTMLInputElement) => void;
 }
 export declare interface FormilaDataFieldset {
   title: string;
@@ -30,15 +32,18 @@ export declare interface FormilaDataFieldset {
 export declare interface FormilaData {
   title: string;
   subtitle: string;
-  attrs: {
-    [key: string]: any;
-  };
+  attrTag: string;
+  // attrs: {
+  //   [key: string]: any;
+  // };
   hidden: {
     name: string;
     value: string;
   }[];
   fieldset: Partial<FormilaDataFieldset>[];
+  submitTitle: string;
 }
+export type Omit<T, U> = Pick<T, Exclude<keyof T, U>>;
 
 /** Import project dependencies */
 import { ntml } from 'lit-ntml';
@@ -49,71 +54,116 @@ const html = ntml({
   minify: false,
 });
 
-async function appendInput(
-  data: Pick<FormilaDataFieldsetField, Exclude<keyof FormilaDataFieldsetField, 'isPrefixed'>>
+function appendLabel(
+  isPrefixed: FormilaDataFieldsetField['isPrefixed']
 ) {
-  return html``;
-}
+  return function appendInput(
+    data: Omit<FormilaDataFieldsetField, 'isPrefixed'>
+  ) {
+    const {
+      description,
+      errorMessage,
+      fieldTag,
+    } = data || {} as Omit<FormilaDataFieldsetField, 'isPrefixed'>;
 
-async function appendLabel(
-  isPrefixed: FormilaDataFieldsetField['isPrefixed'],
-) {
-  return isPrefixed
-    ? function appendPrefixedInput(
-      data: Pick<FormilaDataFieldsetField, Exclude<keyof FormilaDataFieldsetField, 'isPrefixed'>>
-    ) {
-      return `<div class="prefixed-input">${data}<div>`;
+    return html`${
+      typeof isPrefixed !== 'boolean' || !isPrefixed
+        ? ''
+        : '<div class="prefixed-input">'
+    }${
+      fieldTag == null
+        ? ''
+        : html`${fieldTag}`
     }
-    : appendInput;
+    ${
+      description == null
+        ? ''
+        : html`<span>${description}</span>`
+    }
+    ${
+      isPrefixed ? '</div>' : ''
+    }${
+      errorMessage == null
+        ? ''
+        : html`<div class="error-msg">${errorMessage}</div>`
+    }`;
+  };
 }
 
 async function appendField(
-  field: Required<FormilaDataFieldset['field']>
+  field: FormilaDataFieldset['field']
 ) {
-  return field!.map((n) => {
-    return appendLabel(n.isPrefixed!);
-  }).join('\n');
+  try {
+    return (
+      await Promise.all(field!.map((n) => {
+        const {
+          isPrefixed,
+          ...restN
+        } = n || {} as FormilaDataFieldsetField;
+
+        return appendLabel(n.isPrefixed!)(
+          restN as Omit<FormilaDataFieldsetField, 'isPrefiexed'>
+        );
+      }))
+    )
+      .join('\n');
+  } catch (e) {
+    throw e;
+  }
 }
 
 async function appendFieldset(
   fieldset: FormilaData['fieldset']
 ) {
-  return Array.isArray(fieldset) && fieldset.length > 0
-    ? fieldset.map((n) => {
-      return html`<fieldset>
-        <h3>${n.title}</h3>
+  try {
+    return Array.isArray(fieldset) && fieldset.length > 0
+      ? (
+        await Promise.all(fieldset.map(async (n) => {
+          return html`<fieldset>
+            <h3>${n.title}</h3>
 
-        <div>${
-          Array.isArray(n.field) && n.field.length > 0
-            ? appendField(n.field!)
-            : ''
-        }</div>
-      </fieldset>`;
-    }).join('\n')
-    : '';
+            <div>${
+              Array.isArray(n.field) && n.field.length > 0
+                ? appendField(n.field)
+                : ''
+            }</div>
+          </fieldset>`;
+        }))
+      )
+        .join('\n')
+      : '';
+  } catch (e) {
+    throw e;
+  }
 }
 
 async function appendHidden(
   hidden: FormilaData['hidden']
 ) {
-  return Array.isArray(hidden) && hidden.length > 0
-    ? hidden!.map(
-      n => `<input type="hidden" name="${n.name}" value="${n.value}"></input>`
-    ).join('\n')
-    : '';
+  try {
+    return Array.isArray(hidden) && hidden.length > 0
+      ? (
+        await Promise.all(hidden!.map(
+          async n => html`<input type="hidden" name="${n.name}" value="${n.value}"></input>`
+        ))
+      ).join('\n')
+      : '';
+  } catch (e) {
+    throw e;
+  }
 }
 
-async function appendAttrs(
-  attrs: FormilaData['attrs']
-) {
-  return Object.keys(attrs)
-    .map((n) => {
-      return n === 'acceptCharset'
-        ? `accept-charset="${attrs[n]}"`
-        : `${n}="${attrs[n]}"`;
-    })
-    .join(' ');
-}
+// async function appendAttrs(
+//   attrs: FormilaData['attrs']
+// ) {
+//   return Object.keys(attrs)
+//     .map((n) => {
+//       return n === 'acceptCharset'
+//         ? `accept-charset="${attrs[n]}"`
+//         : `${n}="${attrs[n]}"`;
+//     })
+//     .join(' ');
+// }
 
 export async function formila(
   data: Partial<FormilaData> = {} as FormilaData
@@ -121,15 +171,43 @@ export async function formila(
   const {
     title,
     subtitle,
-    attrs = {},
+    attrTag,
     hidden = [] as FormilaData['hidden'],
     fieldset = [] as FormilaData['fieldset'],
+    submitTitle,
   } = data;
 
-  return html`<form ${appendAttrs(attrs)}>
-    <div>${appendHidden(hidden)}</div>
+  return html`<form${
+    attrTag == null
+      ? ''
+      : html` ${attrTag.trim()}`
+  }>
+    ${
+      title == null
+        ? ''
+        : html`<h2 class="form__title">title</h2>`
+    }
+    ${
+      subtitle == null
+        ? ''
+        : html`<p class="form__subtitle">${subtitle}</p>`
+    }
+
+    ${
+      hidden == null
+        ? ''
+        : html`<div class="form__hidden-input-container">${appendHidden(hidden)}</div>`
+    }
 
     ${appendFieldset(fieldset)}
+
+    <div class="btn-container">
+      <button type="submit">${
+        submitTitle == null
+          ? 'Submit'
+          : submitTitle
+      }</button>
+    </div>
   </form>`;
 }
 
