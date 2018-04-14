@@ -27,3 +27,4 @@ node_modules/
 # Do not ignore
 !**/json.d.ts
 !gulpfile*.js
+!src/demo/*.*
