@@ -1,48 +1,26 @@
 // @ts-check
 
-export declare interface FormilaDataFieldsetField {
-  // type: string;
-  // attrs: {
-  //   [key: string]: string | number | boolean;
-  // };
+export declare interface FormilaOptsFieldsetField {
   isPrefixed: boolean;
   attrTag: string;
   title: string;
   fieldTag: string;
   description: string;
   errorMessage: string;
-  // validateFn: (el: HTMLInputElement) => boolean;
-  // eventHandler: (el: HTMLInputElement) => void;
 }
-export declare interface FormilaDataFieldset {
+export declare interface FormilaOptsFieldset {
   title: string;
-  field?: Partial<FormilaDataFieldsetField>[];
+  field?: Partial<FormilaOptsFieldsetField>[];
 }
-// export declare interface FormAttrs {
-//   acceptCharset?: string;
-//   action?: string;
-//   autocomplete?: string; /** Defaults to 'on' */
-//   enctype?: string; /** Defaults to 'url-encoded' */
-//   method?: string; /** Defaults to 'GET'. */
-//   name?: string;
-//   novalidate?: boolean;
-//   target?: string; /** Defaults to '_self' */
-// }
-// export declare interface FormilaDataAttrs extends FormAttrs {
-//   [key: string]: any;
-// }
-export declare interface FormilaData {
+export declare interface FormilaOpts {
   title: string;
   subtitle: string;
   attrTag: string;
-  // attrs: {
-  //   [key: string]: any;
-  // };
   hidden: {
     name: string;
     value: string;
   }[];
-  fieldset: Partial<FormilaDataFieldset>[];
+  fieldset: Partial<FormilaOptsFieldset>[];
   submitTitle: string;
 }
 export type Omit<T, U> = Pick<T, Exclude<keyof T, U>>;
@@ -55,12 +33,13 @@ const html = ntml({
   parseHtml: false,
   minify: false,
 });
+export const ATTR_ID_REGEX = /.+id\=\"(.+?)\".*/i;
 
 function appendLabel(
-  isPrefixed: FormilaDataFieldsetField['isPrefixed']
+  isPrefixed: FormilaOptsFieldsetField['isPrefixed']
 ) {
   return async function appendInput(
-    data: Omit<FormilaDataFieldsetField, 'isPrefixed'>
+    data: Omit<FormilaOptsFieldsetField, 'isPrefixed'>
   ) {
     const {
       attrTag,
@@ -68,13 +47,21 @@ function appendLabel(
       errorMessage,
       fieldTag,
       title,
-    } = data || {} as Omit<FormilaDataFieldsetField, 'isPrefixed'>;
+    } = data || {} as Omit<FormilaOptsFieldsetField, 'isPrefixed'>;
+
+    if (!/(id\=\")/i.test(fieldTag)) {
+      throw new Error('Missing required attribute \'id\' in opts[fieldTag]');
+    }
 
     return html`<div class="label-container">
     <label${
       attrTag == null
-        ? ''
-        : ` ${await html`${attrTag}`}`
+        ? ` for="${fieldTag.replace(ATTR_ID_REGEX, '$1')}"`
+        : ` ${await html`${attrTag}${
+          ATTR_ID_REGEX.test(fieldTag)
+            ? ''
+            : ` for="${fieldTag.replace(ATTR_ID_REGEX, '$1')}"`
+        }`}`
     }><div class="input-title">${
       title
     }</div>${
@@ -88,7 +75,15 @@ function appendLabel(
     }${
       fieldTag == null
         ? ''
-        : html`${fieldTag}`
+        : html`${fieldTag.replace(
+          /(>.*?<\/(input|select)>.(.*))/gi,
+          ` aria-required="${
+            !/(required=\"false\")/i.test(fieldTag)
+              && /(required\=\"true\"|required\s*)/i.test(fieldTag)
+                ? 'true'
+                : 'false'
+          }" aria-invalid="false"$1`
+        )}`
     }
     ${
       description == null
@@ -108,7 +103,7 @@ function appendLabel(
 }
 
 async function appendField(
-  field: FormilaDataFieldset['field']
+  field: FormilaOptsFieldset['field']
 ) {
   try {
     return (
@@ -116,10 +111,10 @@ async function appendField(
         const {
           isPrefixed,
           ...restN
-        } = n || {} as FormilaDataFieldsetField;
+        } = n || {} as FormilaOptsFieldsetField;
 
         return appendLabel(n.isPrefixed!)(
-          restN as Omit<FormilaDataFieldsetField, 'isPrefiexed'>
+          restN as Omit<FormilaOptsFieldsetField, 'isPrefiexed'>
         );
       }))
     )
@@ -130,7 +125,7 @@ async function appendField(
 }
 
 async function appendFieldset(
-  fieldset: FormilaData['fieldset']
+  fieldset: FormilaOpts['fieldset']
 ) {
   try {
     return Array.isArray(fieldset) && fieldset.length > 0
@@ -156,7 +151,7 @@ async function appendFieldset(
 }
 
 async function appendHidden(
-  hidden: FormilaData['hidden']
+  hidden: FormilaOpts['hidden']
 ) {
   try {
     return Array.isArray(hidden) && hidden.length > 0
@@ -170,18 +165,6 @@ async function appendHidden(
     throw e;
   }
 }
-
-// async function appendAttrs(
-//   attrs: FormilaData['attrs']
-// ) {
-//   return Object.keys(attrs)
-//     .map((n) => {
-//       return n === 'acceptCharset'
-//         ? `accept-charset="${attrs[n]}"`
-//         : `${n}="${attrs[n]}"`;
-//     })
-//     .join(' ');
-// }
 
 export async function renderStyle() {
   return html`<style>
@@ -209,12 +192,16 @@ export async function renderStyle() {
     }
     /** [END] Reset element style */
 
+    .label-container + .label-container {
+      margin: 10px 0 0;
+    }
+
     .prefixed-input {
       display: flex;
       flex-direction: row;
       align-items: center;
     }
-    .prefixed-input.with-description {
+    .prefixed-input.has-description {
       flex-direction: column;
       align-items: inherit;
     }
@@ -226,17 +213,19 @@ export async function renderStyle() {
     }
     label > .prefixed-input > input:not([type=checkbox]) {
       flex: 1 0 auto;
+
+      width: 100%;
       margin: 0 0 3px 0;
     }
     label > .prefixed-input > input[type="checkbox"] {
       margin: 3px 8px 3px 3px;
     }
     label > input[aria-invalid=false],
-    label > .prefixed-input:not(.is-invalid),
-    label > .prefixed-input.is-invalid + .error-msg,
+    label:not(.is-invalid) > .prefixed-input,
+    label.is-invalid > .prefixed-input + .error-msg,
     label > input[aria-invalid=true] + .error-msg,
     label > select {
-      margin: 0 0 16px 0;
+      margin: 0;
     }
 
     label > .prefixed-input > .input-description {
@@ -254,18 +243,23 @@ export async function renderStyle() {
 
     label > input[aria-invalid=true],
     label > input[aria-invalid=false] + .error-msg,
-    label > .prefixed-input.is-invalid,
-    label > .prefixed-input:not(.is-invalid) + .error-msg {
+    label.is-invalid > .prefixed-input,
+    label:not(.is-invalid) > .prefixed-input + .error-msg {
       margin: 0;
     }
 
+    label.is-invalid > .input-title {
+      color: #ff1744;
+      color: var(--error-color, #ff1744);
+    }
+
     input[aria-invalid=true] + .error-msg,
-    label > .prefixed-input.is-invalid + .error-msg {
+    label.is-invalid > .prefixed-input + .error-msg {
       display: block;
     }
     input[aria-invalid=true] {
       border: 1px solid #ff1744;
-      border: 1px solid var(--input-border-color, #ff1744);
+      border: 1px solid var(--error-color, #ff1744);
     }
 
     .btn-container {
@@ -330,8 +324,8 @@ export async function renderHtml(data) {
     title,
     subtitle,
     attrTag,
-    hidden = [] as FormilaData['hidden'],
-    fieldset = [] as FormilaData['fieldset'],
+    hidden = [] as FormilaOpts['hidden'],
+    fieldset = [] as FormilaOpts['fieldset'],
     submitTitle,
   } = data;
 
@@ -343,7 +337,7 @@ export async function renderHtml(data) {
     ${
       title == null
         ? ''
-        : html`<h2 class="form__title">title</h2>`
+        : html`<h2 class="form__title">${title}</h2>`
     }
     ${
       subtitle == null
@@ -370,10 +364,10 @@ export async function renderHtml(data) {
 }
 
 export async function formila(
-  data: Partial<FormilaData> = {} as FormilaData
+  opts: Partial<FormilaOpts> = {} as FormilaOpts
 ) {
   return {
-    html: await renderHtml(data),
+    html: await renderHtml(opts),
     style: await renderStyle(),
   };
 }

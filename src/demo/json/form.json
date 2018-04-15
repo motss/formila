@@ -1,0 +1,109 @@
+{
+  "title": "My quote",
+  "subtitle": "",
+  "attrTag": "class=\"quote-form\" method=\"POST\" action=\"/demo\" enctype=\"multipart/form-data\"",
+
+  "hidden": [
+    {
+      "name": "_csrf",
+      "value": "860026522566656"
+    },
+    {
+      "name": "signed_request",
+      "value": "2647584373997568"
+    }
+  ],
+  "fieldset": [
+    {
+      "title": "Personal information",
+      "field": [
+        {
+          "isPrefixed": false,
+          "title": "Name",
+          "fieldTag": "<input type=\"text\" id=\"name\" name=\"name\" type=\"text\" maxlength=\"80\" required pattern=\"^[a-zA-Z \\.,+\\-@\\/()'*]*$\"></input>",
+          "description": "",
+          "errorMessage": "Invalid name"
+        },
+        {
+          "isPrefixed": true,
+          "title": "Date of birth",
+          "fieldTag": "<input type=\"date\" id=\"dob\" name=\"dob\" required pattern=\"[0-9]{2}/[0-9]{2}/[0-9]{4}\"></input>",
+          "description": "Main insured must be 21 years old and above",
+          "errorMessage": "Main insured must be 21 years old and above"
+        },
+        {
+          "isPrefixed": false,
+          "title": "Eligibility",
+          "fieldTag": "<select id=\"eligibility\" name=\"eligibility\"><option value=\"us_citizen\">US Citizen</option><option value=\"canadian\">Canadian</option></select>",
+          "description": "",
+          "errorMessage": ""
+        },
+        {
+          "isPrefixed": false,
+          "title": "NRIC/ FIN No.",
+          "fieldTag": "<input id=\"nric_fin\" name=\"nric_fin\" type=\"text\" minlength=\"9\" required></input>",
+          "description": "",
+          "errorMessage": "Invalid NRIC/ FIN no."
+        }
+      ]
+    },
+    {
+      "title": "Contact details",
+      "field": [
+        {
+          "isPrefixed": false,
+          "title": "Email",
+          "fieldTag": "<input id=\"email\" name=\"email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9\\._%+\\-]+\\@[a-z0-9\\.\\-]+\\.[a-z]{2,3}$\"></input>",
+          "description": "",
+          "errorMessage": "Invalid email"
+        },
+        {
+          "isPrefixed": false,
+          "title": "Confirm email",
+          "fieldTag": "<input id=\"confirm_email\" name=\"confirm_email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9\\._%+\\-]+\\@[a-z0-9\\.\\-]+\\.[a-z]{2,3}\"></input>",
+          "description": "",
+          "errorMessage": "Invalid confirm email"
+        },
+        {
+          "isPrefixed": false,
+          "title": "Mobile phone",
+          "fieldTag": "<input id=\"mobile\" name=\"mobile\" type=\"text\" required minlength=\"8\" maxlength=\"8\" pattern=\"[8-9][0-9]{7}\"></input>",
+          "description": "",
+          "errorMessage": "Invalid mobile number"
+        }
+      ]
+    },
+    {
+      "title": "Mailing address",
+      "field": [
+        {
+          "isPrefixed": false,
+          "title": "Postal code",
+          "fieldTag": "<input id=\"postal\" name=\"postal\" type=\"text\" required minlength=\"6\" maxlength=\"6\" pattern=\"[0-9]{6}\"></input>",
+          "descriptiion": "",
+          "errorMessage": "Invalid postal code"
+        },
+        {
+          "isPrefixed": false,
+          "title": "Street name",
+          "fieldTag": "<input id=\"street\" name=\"street\" type=\"text\" required maxlength=\"40\" pattern=\"[a-zA-Z0-9 &(),+\\-#\\/!:@'\\.]*$\"><?input>",
+          "descriptiion": "",
+          "errorMessage": "Invalid street name"
+        }
+      ]
+    },
+    {
+      "title": "Approval letter",
+      "field": [
+        {
+          "isPrefixed": true,
+          "title": "Approval letter",
+          "fieldTag": "<input id=\"approval_letter\" class=\"input__file-uploader\" type=\"file\" name=\"approval_letter\"></input><div class=\"input-file__file-size hidden\"></div>",
+          "description": "Upload approval letter in .pdf format and it shall not exceed 300KB in size",
+          "errorMessage": "Please upload required document"
+        }
+      ]
+    }
+  ],
+  "submitTitle": "Next"
+}

@@ -1,112 +1,33 @@
 // @ts-check
 
-import fastify from 'fastify';
-import formBody from 'fastify-formbody';
-
+import restify from 'restify';
 import { ntml } from 'lit-ntml';
+
 import { formila } from '../../dist';
+// @ts-ignore
+import formOpts from './json/form.json';
 
-const formOpts = {
-  title: 'form title',
-  subtitle: 'form subtitle',
-  attrTag: `class="form__test"
-  method="POST"
-  action="/demo"
-  enctype="application/x-www-urlencoded"`,
+const html = ntml({ parseHtml: true, minify: false });
+const server = restify.createServer();
 
-  hidden: [
-    {
-      name: '_csrf',
-      value: Math.random().toString(16).slice(-7),
-    },
-    {
-      name: 'signed_request',
-      value: Math.random().toString(16).slice(-7),
-    },
-  ],
-  fieldset: [
-    {
-      title: 'fieldset title 001',
-      field: [
-        {
-          // type: 'input',
-          isPrefixed: true,
-          // attrs: {
-          //   name: 'first_name',
-          //   type: 'text',
-          //   'aria-invalid': false,
-          //   pattern: '^[\w\s]+',
-          //   minlength: 1,
-          //   maxlength: 40,
-          // },
-          attrTag: `for="first_name"`,
-          title: 'First name',
-          fieldTag: `<span>#</span><input id="first_name"
-            type="text"
-            name="first_name"
-            aria-required="true"
-            aria-invalid="false"
-            pattern="^[\\w\\s]+"
-            minlength="1"
-            maxlength="40"></input>`,
-          description: 'Please fill in your first name',
-          errorMessage: 'Invalid first name',
-          // validateFn: (el /** @type HTMLInputElement */) => {
-          //   if (/[0-9]/i.test(el.value)) {
-          //     el.setAttribute('aria-invalid', 'true');
-          //     return false;
-          //   }
-
-          //   return true;
-          // },
-          // eventHandler: (el /** @type HTMLInputElement */) => {
-          //   el.addEventListener('input', (ev) => {
-          //     console.log('# input', ev.target.value);
-          //   });
-          // },
-        },
-        {
-          isPrefixed: false,
-          attrTag: 'for="last_name"',
-          title: 'Last name',
-          fieldTag: `<input id="last_name"
-            type="text"
-            name="last_name"
-            pattern="^[\\w\\s]*"
-            minlength="1"
-            maxlength="40"
-            aria-required="true"
-            aria-invalid="false"></input>`,
-          // description: 'Please fill in your last name',
-          errorMessage: 'Invalid last name',
-        }
-      ]
-    }
-  ],
-  submitTitle: 'submit',
-};
-
-async function main(opts) {
-  return formila(opts);
-};
-
-const html = ntml({
-  parseHtml: true,
-  minify: true,
-});
-
-const server = fastify();
-
-server.register(formBody);
+server.use(restify.plugins.bodyParser({
+  mapParams: true,
+  mapFiles: true,
+  keepExtensions: true,
+}));
 
 server.get('/healthcheck', async (_, res) => {
-  return 'ok';
+  return res.send('ok');
 });
-server.get('/demo', async (_, res) => {
+server.get('/demo', async (_, res, next) => {
   const d = await formila(formOpts);
 
-  res.header('content-type', 'text/html');
-  return html`<body>
+  console.log(d.html);
+
+  res.writeHead(200, {
+    'content-type': 'text/html',
+  });
+  res.end(await html`<body>
     <style>
       html,
       body {
@@ -151,12 +72,30 @@ server.get('/demo', async (_, res) => {
     </style>
     ${d.style}
     <main>${d.html}</main>
-  </body>`;
+  </body>`);
+  return next();
 });
-server.post('/demo', async (req, res) => {
-  return { ...req.body };
+server.post('/demo', (req, res) => {
+  const uploadedFiles = Object.keys(req.files)
+    .reduce((p, n) => {
+      return {
+        ...p,
+        [n]: {
+          filename: req.files[n].name,
+          mimetype: req.files[n].type,
+          filesize: req.files[n].size,
+          base64: req.params[n].toString('base64'),
+        },
+      };
+    }, {});
+
+  res.setHeader('content-type', 'application/json');
+  return res.send({
+    ...req.body,
+    uploadedFiles,
+  });
 });
 
 server.listen(4040, () => {
-  console.info('Demo Fastify is running at port 4040...');
+  console.info('Demo Restify is running at port 4040...');
 });
