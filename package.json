@@ -30,7 +30,7 @@
     "prepublishOnly": "npm run check && npm run build"
   },
   "dependencies": {
-    "lit-ntml": "^0.4.4"
+    "parse5": "^4.0.0"
   },
   "devDependencies": {
     "@messageflow/build": "0.0.12",
