@@ -20,7 +20,7 @@
         {
           "isPrefixed": false,
           "title": "Name",
-          "fieldTag": "<input type=\"text\" id=\"name\" name=\"name\" type=\"text\" maxlength=\"80\" required pattern=\"^[a-zA-Z \\.,+\\-@\\/()'*]*$\"></input>",
+          "fieldTag": "<input type=\"text\" id=\"name\" name=\"name\" type=\"text\" maxlength=\"80\" required pattern=\"^[a-zA-Z .,+\\-@\\/()'*]*$\"></input>",
           "description": "",
           "errorMessage": "Invalid name"
         },
@@ -53,14 +53,14 @@
         {
           "isPrefixed": false,
           "title": "Email",
-          "fieldTag": "<input id=\"email\" name=\"email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9\\._%+\\-]+\\@[a-z0-9\\.\\-]+\\.[a-z]{2,3}$\"></input>",
+          "fieldTag": "<input id=\"email\" name=\"email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}$\"></input>",
           "description": "",
           "errorMessage": "Invalid email"
         },
         {
           "isPrefixed": false,
           "title": "Confirm email",
-          "fieldTag": "<input id=\"confirm_email\" name=\"confirm_email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9\\._%+\\-]+\\@[a-z0-9\\.\\-]+\\.[a-z]{2,3}\"></input>",
+          "fieldTag": "<input id=\"confirm_email\" name=\"confirm_email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}\"></input>",
           "description": "",
           "errorMessage": "Invalid confirm email"
         },
@@ -86,7 +86,7 @@
         {
           "isPrefixed": false,
           "title": "Street name",
-          "fieldTag": "<input id=\"street\" name=\"street\" type=\"text\" required maxlength=\"40\" pattern=\"[a-zA-Z0-9 &(),+\\-#\\/!:@'\\.]*$\"><?input>",
+          "fieldTag": "<input id=\"street\" name=\"street\" type=\"text\" required maxlength=\"40\" pattern=\"[a-zA-Z0-9 &(),+\\-#\\/!:@'.]*$\"><?input>",
           "descriptiion": "",
           "errorMessage": "Invalid street name"
         }
@@ -105,5 +105,6 @@
       ]
     }
   ],
+  "errorMessage": "Invalid field found in the form",
   "submitTitle": "Next"
 }

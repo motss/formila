@@ -21,6 +21,7 @@ export declare interface FormilaOpts {
     value: string;
   }[];
   fieldset: Partial<FormilaOptsFieldset>[];
+  errorMessage: string;
   submitTitle: string;
 }
 export type Omit<T, U> = Pick<T, Exclude<keyof T, U>>;
@@ -258,6 +259,7 @@ export function renderStyleSync() {
     color: var(--input-description-color, rgba(0, 0, 0, .75));
   }
 
+  form > .form__error-msg,
   .error-msg {
     display: none;
     color: #ff1744;
@@ -276,13 +278,19 @@ export function renderStyleSync() {
     color: var(--error-color, #ff1744);
   }
 
+  form.is-invalid > .form__error-msg,
   input[aria-invalid=true] + .error-msg,
+  label.is-invalid > .error-msg,
   label.is-invalid > .prefixed-input + .error-msg {
     display: block;
   }
   input[aria-invalid=true] {
     border: 1px solid #ff1744;
     border: 1px solid var(--error-color, #ff1744);
+  }
+
+  form > .form__error-msg {
+    margin: 1.5em 0 1em;
   }
 
   .btn-container {
@@ -342,13 +350,14 @@ export function renderStyleSync() {
 </style>`);
 }
 
-export function renderFormSync(opts) {
+export function renderFormSync(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
   const {
     title,
     subtitle,
     attrTag,
     hidden = [] as FormilaOpts['hidden'],
     fieldset = [] as FormilaOpts['fieldset'],
+    errorMessage,
     submitTitle,
   } = opts;
 
@@ -376,6 +385,12 @@ export function renderFormSync(opts) {
 
     ${appendFieldset(fieldset)}
 
+    ${
+      errorMessage == null
+        ? ''
+        : `<div class="form__error-msg">${errorMessage}</div>`
+    }
+
     <div class="btn-container">
       <button type="submit">${
         submitTitle == null
@@ -390,22 +405,18 @@ export async function renderStyle() {
   return renderStyleSync();
 }
 
-export async function renderForm(opts) {
+export async function renderForm(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
   return renderFormSync(opts);
 }
 
-export function formilaSync(
-  opts: Partial<FormilaOpts> = {} as FormilaOpts
-) {
+export function formilaSync(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
   return {
     html: renderFormSync(opts),
     style: renderStyleSync(),
   };
 }
 
-export async function formila(
-  opts: Partial<FormilaOpts> = {} as FormilaOpts
-) {
+export async function formila(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
   return {
     html: await renderForm(opts),
     style: await renderStyle(),

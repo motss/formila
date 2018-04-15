@@ -1,5 +1,6 @@
 // @ts-check
 
+import path from 'path';
 import restify from 'restify';
 import parse5 from 'parse5';
 
@@ -18,6 +19,12 @@ server.use(restify.plugins.bodyParser({
 server.get('/healthcheck', async (_, res) => {
   return res.send('ok');
 });
+server.get('/scripts/*.m*js', restify.plugins.serveStatic({
+  maxAge: 10 * 60, /** 10 minutes */
+  appendRequestPath: false,
+  directory: './src/demo',
+}));
+
 server.get('/demo', async (_, res, next) => {
   const d = await formila(formOpts);
   const rendered = parse5.serialize(parse5.parse(`<body>
@@ -65,6 +72,7 @@ server.get('/demo', async (_, res, next) => {
   </style>
   ${d.style}
   <main>${d.html}</main>
+  <script src="./scripts/form.mjs" async></script>
 </body>`));
 
   res.writeHead(200, {
