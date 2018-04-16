@@ -69,6 +69,10 @@ server.get('/demo', async (_, res, next) => {
                   0 3px 14px 2px rgba(0, 0, 0, 0.12),
                   0 5px 5px -3px rgba(0, 0, 0, 0.4);
     }
+
+    .is-student-container {
+      margin: 10px 0 0;
+    }
   </style>
   ${d.style}
   <main>${d.html}</main>

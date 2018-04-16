@@ -20,14 +20,14 @@
         {
           "isPrefixed": false,
           "title": "Name",
-          "fieldTag": "<input type=\"text\" id=\"name\" name=\"name\" type=\"text\" maxlength=\"80\" required pattern=\"^[a-zA-Z .,+\\-@\\/()'*]*$\"></input>",
+          "fieldTag": "<input type=\"text\" id=\"name\" name=\"name\" type=\"text\" maxlength=\"80\" required pattern=\"^[a-zA-Z .,+\\-@\\/()'*]*$\">",
           "description": "",
           "errorMessage": "Invalid name"
         },
         {
           "isPrefixed": true,
           "title": "Date of birth",
-          "fieldTag": "<input type=\"date\" id=\"dob\" name=\"dob\" required pattern=\"[0-9]{2}/[0-9]{2}/[0-9]{4}\"></input>",
+          "fieldTag": "<input type=\"date\" id=\"dob\" name=\"dob\" required pattern=\"[0-9]{2}/[0-9]{2}/[0-9]{4}\">",
           "description": "Main insured must be 21 years old and above",
           "errorMessage": "Main insured must be 21 years old and above"
         },
@@ -41,33 +41,57 @@
         {
           "isPrefixed": false,
           "title": "NRIC/ FIN No.",
-          "fieldTag": "<input id=\"nric_fin\" name=\"nric_fin\" type=\"text\" minlength=\"9\" required></input>",
+          "fieldTag": "<input id=\"nric_fin\" name=\"nric_fin\" type=\"text\" minlength=\"9\" required>",
           "description": "",
           "errorMessage": "Invalid NRIC/ FIN no."
         }
       ]
     },
+
+    {
+      "subtitle": "Gender",
+      "attrTag": "class=\"gender-container\"",
+      "field": [
+        {
+          "isPrefixed": false,
+          "attrTag": "class=\"gender-male\"",
+          "fieldTag": "<input id=\"gender_male\" name=\"gender\" type=\"radio\" checked><span>Male</span"
+        },
+        {
+          "isPrefixed": false,
+          "attrTag": "class=\"gender-female\"",
+          "fieldTag": "<input id=\"gender_female\" name=\"gender\" type=\"radio\"><span>Female</span>"
+        },
+        {
+          "isPrefixed": false,
+          "attrTag": "class=\"is-student-container\"",
+          "title": "Please check this if you're a student",
+          "fieldTag": "<input id=\"is_student\" name=\"is_student\" type=\"checkbox\"><span>Student</span>"
+        }
+      ]
+    },
+
     {
       "title": "Contact details",
       "field": [
         {
           "isPrefixed": false,
           "title": "Email",
-          "fieldTag": "<input id=\"email\" name=\"email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}$\"></input>",
+          "fieldTag": "<input id=\"email\" name=\"email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}$\">",
           "description": "",
           "errorMessage": "Invalid email"
         },
         {
           "isPrefixed": false,
           "title": "Confirm email",
-          "fieldTag": "<input id=\"confirm_email\" name=\"confirm_email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}\"></input>",
+          "fieldTag": "<input id=\"confirm_email\" name=\"confirm_email\" type=\"text\" required maxlength=\"49\" pattern=\"[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}\">",
           "description": "",
           "errorMessage": "Invalid confirm email"
         },
         {
           "isPrefixed": false,
           "title": "Mobile phone",
-          "fieldTag": "<input id=\"mobile\" name=\"mobile\" type=\"text\" required minlength=\"8\" maxlength=\"8\" pattern=\"[8-9][0-9]{7}\"></input>",
+          "fieldTag": "<input id=\"mobile\" name=\"mobile\" type=\"text\" required minlength=\"8\" maxlength=\"8\" pattern=\"[8-9][0-9]{7}\">",
           "description": "",
           "errorMessage": "Invalid mobile number"
         }
@@ -79,7 +103,7 @@
         {
           "isPrefixed": false,
           "title": "Postal code",
-          "fieldTag": "<input id=\"postal\" name=\"postal\" type=\"text\" required minlength=\"6\" maxlength=\"6\" pattern=\"[0-9]{6}\"></input>",
+          "fieldTag": "<input id=\"postal\" name=\"postal\" type=\"text\" required minlength=\"6\" maxlength=\"6\" pattern=\"[0-9]{6}\">",
           "descriptiion": "",
           "errorMessage": "Invalid postal code"
         },
@@ -98,7 +122,7 @@
         {
           "isPrefixed": true,
           "title": "Approval letter",
-          "fieldTag": "<input id=\"approval_letter\" class=\"input__file-uploader\" type=\"file\" name=\"approval_letter\"></input><div class=\"input-file__file-size hidden\"></div>",
+          "fieldTag": "<input id=\"approval_letter\" class=\"input__file-uploader\" type=\"file\" name=\"approval_letter\"><div class=\"input-file__file-size hidden\"></div>",
           "description": "Upload approval letter in .pdf format and it shall not exceed 300KB in size",
           "errorMessage": "Please upload required document"
         }

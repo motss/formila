@@ -10,7 +10,9 @@ export declare interface FormilaOptsFieldsetField {
 }
 export declare interface FormilaOptsFieldset {
   title: string;
-  field?: Partial<FormilaOptsFieldsetField>[];
+  subtitle: string;
+  attrTag: string;
+  field: Partial<FormilaOptsFieldsetField>[];
 }
 export declare interface FormilaOpts {
   title: string;
@@ -79,7 +81,7 @@ function getIdFromFieldTag(fieldTag: string) {
   const htmlFor = attrs.find(n => /for/i.test(n.name));
 
   return htmlFor == null
-    ? ` for="${value}"`
+    ? value
     : '';
 }
 
@@ -109,16 +111,20 @@ function appendLabel(
       throw new Error('Missing required attribute \'id\' in opts[fieldTag]');
     }
 
-    return `<div class="label-container">
-    <label${
-      parseAttrs(`${getIdFromFieldTag(fieldTag)} ${
-        attrTag == null || (typeof attrTag === 'string' && !attrTag.length)
-          ? ''
-          : attrTag
-      }`)
-    }><div class="input-title">${
-      title
-    }</div>${
+    return `<div class="label-container ${
+      attrTag == null
+        ? ''
+        : attrTag.replace(/.*class\=\"(.+?)\".*/gi, '$1')
+    }"${
+      attrTag == null
+        ? ''
+        : parseAttrs(attrTag.replace(/\s*class\=\".+?\"/gi, ''))
+    }>
+    <label for="${getIdFromFieldTag(fieldTag)}">${
+      title == null
+        ? ''
+        : `<div class="input-title">${title}</div>`
+    }${
       typeof isPrefixed !== 'boolean' || !isPrefixed
         ? ''
         : `<div class="prefixed-input${description == null ? '' : ' has-description'}">`
@@ -162,15 +168,31 @@ function appendFieldset(
   fieldset: FormilaOpts['fieldset']
 ) {
   return Array.isArray(fieldset) && fieldset.length > 0
-    ? fieldset.map((n) => {
+    ? fieldset.map(({ title, subtitle, attrTag, field }) => {
       return `<fieldset>
-        <legend>${n.title}</legend>
-
-        <div class="fields-container">${
-          Array.isArray(n.field) && n.field.length > 0
-            ? appendField(n.field)
+        ${
+          title == null
+            ? ''
+            : `<legend>${title}</legend>`
+        }
+        ${
+          subtitle == null
+            ? ''
+            : `<div class="fieldset__subtitle">${subtitle}</div>`
+        }
+        ${
+          Array.isArray(field) && field.length > 0
+            ? `<div class="fields-container ${
+              attrTag == null
+                ? ''
+                : attrTag.replace(/.*class\=\"(.+?)\".*/gi, '$1')
+            }"${
+              attrTag == null
+                ? ''
+                : parseAttrs(attrTag.replace(/\s*class\=\".+?\"/gi, ''))
+            }>${appendField(field)}</div>`
             : ''
-        }</div>
+        }
       </fieldset>`;
     }).join('\n')
     : '';
@@ -214,11 +236,10 @@ export function renderStyleSync() {
     margin: 1em 0;
     font-weight: 700;
   }
-  /** [END] Reset element style */
-
-  .label-container + .label-container {
-    margin: 10px 0 0;
+  fielset > .fieldset__subtitle {
+    margin: 1em 0 0;
   }
+  /** [END] Reset element style */
 
   .prefixed-input {
     display: flex;
@@ -241,15 +262,17 @@ export function renderStyleSync() {
     width: 100%;
     margin: 0 0 3px 0;
   }
+  label > input[type="radio"],
+  label > .prefixed-input > input[type="radio"],
   label > .prefixed-input > input[type="checkbox"] {
     margin: 3px 8px 3px 3px;
   }
-  label > input[aria-invalid=false],
+  label > input:not([type="radio"]):not([type="checkbox"])[aria-invalid=false],
   label:not(.is-invalid) > .prefixed-input,
   label.is-invalid > .prefixed-input + .error-msg,
   label > input[aria-invalid=true] + .error-msg,
   label > select {
-    margin: 0;
+    margin: 0 0 10px;
   }
 
   label > .prefixed-input > .input-description {
@@ -283,6 +306,7 @@ export function renderStyleSync() {
   label.is-invalid > .error-msg,
   label.is-invalid > .prefixed-input + .error-msg {
     display: block;
+    margin: 0 0 10px;
   }
   input[aria-invalid=true] {
     border: 1px solid #ff1744;
