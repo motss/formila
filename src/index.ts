@@ -149,20 +149,20 @@ function appendLabel(
   };
 }
 
-function appendField(
-  field: FormilaOptsFieldset['field']
-) {
-  return field!.map((n) => {
-    const {
-      isPrefixed,
-      ...restN
-    } = n || {} as FormilaOptsFieldsetField;
+// function appendField(
+//   field: FormilaOptsFieldset['field']
+// ) {
+//   return field!.map((n) => {
+//     const {
+//       isPrefixed,
+//       ...restN
+//     } = n || {} as FormilaOptsFieldsetField;
 
-    return appendLabel(n.isPrefixed!)(
-      restN as Omit<FormilaOptsFieldsetField, 'isPrefiexed'>
-    );
-  }).join('\n');
-}
+//     return appendLabel(n.isPrefixed!)(
+//       restN as Omit<FormilaOptsFieldsetField, 'isPrefiexed'>
+//     );
+//   }).join('\n');
+// }
 
 function appendFieldset(
   fieldset: FormilaOpts['fieldset']
@@ -190,7 +190,18 @@ function appendFieldset(
               attrTag == null
                 ? ''
                 : parseAttrs(attrTag.replace(/\s*class\=\".+?\"/gi, ''))
-            }>${appendField(field)}</div>`
+            }>${
+              field.map((n) => {
+                const {
+                  isPrefixed,
+                  ...restN
+                } = n || {} as FormilaOptsFieldsetField;
+
+                return appendLabel(n.isPrefixed!)(
+                  restN as Omit<FormilaOptsFieldsetField, 'isPrefiexed'>
+                );
+              }).join('\n')
+            }</div>`
             : ''
         }
       </fieldset>`;
@@ -198,19 +209,19 @@ function appendFieldset(
     : '';
 }
 
-function appendHidden(
-  hidden: FormilaOpts['hidden']
-) {
-  try {
-    return Array.isArray(hidden) && hidden.length > 0
-      ? hidden!
-          .map(n => `<input type="hidden" name="${n.name}" value="${n.value}"></input>`)
-          .join('\n')
-      : '';
-  } catch (e) {
-    throw e;
-  }
-}
+// function appendHidden(
+//   hidden: FormilaOpts['hidden']
+// ) {
+//   try {
+//     return Array.isArray(hidden) && hidden.length > 0
+//       ? hidden!
+//           .map(n => `<input type="hidden" name="${n.name}" value="${n.value}"></input>`)
+//           .join('\n')
+//       : '';
+//   } catch (e) {
+//     throw e;
+//   }
+// }
 
 export function renderStyleSync() {
   return serializeParsedFragment(`<style>
@@ -404,7 +415,13 @@ export function renderFormSync(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
     ${
       hidden == null
         ? ''
-        : `<div class="form__hidden-input-container">${appendHidden(hidden)}</div>`
+        : `<div class="form__hidden-input-container">${
+          Array.isArray(hidden) && hidden.length > 0
+            ? hidden
+                .map(n => `<input type="hidden" name="${n.name}" value="${n.value}"></input>`)
+                .join('\n')
+            : ''
+        }</div>`
     }
 
     ${appendFieldset(fieldset)}
