@@ -20,7 +20,7 @@
         {
           "isPrefixed": false,
           "title": "Name",
-          "fieldTag": "<input type=\"text\" id=\"name\" name=\"name\" type=\"text\" maxlength=\"80\" required pattern=\"^[a-zA-Z .,+\\-@\\/()'*]*$\">",
+          "fieldTag": "<input id=\"name\" name=\"name\" type=\"text\" maxlength=\"80\" required pattern=\"^[a-zA-Z .,+\\-@\\/()'*]*$\">",
           "description": "",
           "errorMessage": "Invalid name"
         },
@@ -110,7 +110,7 @@
         {
           "isPrefixed": false,
           "title": "Street name",
-          "fieldTag": "<input id=\"street\" name=\"street\" type=\"text\" required maxlength=\"40\" pattern=\"[a-zA-Z0-9 &(),+\\-#\\/!:@'.]*$\"><?input>",
+          "fieldTag": "<input id=\"street\" name=\"street\" type=\"text\" required maxlength=\"40\" pattern=\"[a-zA-Z0-9 &(),+\\-#\\/!:@'.]*$\">",
           "descriptiion": "",
           "errorMessage": "Invalid street name"
         }

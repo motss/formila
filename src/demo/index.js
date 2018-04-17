@@ -6,28 +6,14 @@ import parse5 from 'parse5';
 
 import { formila } from '../../dist';
 // @ts-ignore
-import formOpts from './json/form.json';
+import formOptsJson from './json/form.json';
+import { formOpts } from './form-opts';
 
 const server = restify.createServer();
 
-server.use(restify.plugins.bodyParser({
-  mapParams: true,
-  mapFiles: true,
-  keepExtensions: true,
-}));
-
-server.get('/healthcheck', async (_, res) => {
-  return res.send('ok');
-});
-server.get('/scripts/*.m*js', restify.plugins.serveStatic({
-  maxAge: 10 * 60, /** 10 minutes */
-  appendRequestPath: false,
-  directory: './src/demo',
-}));
-
-server.get('/demo', async (_, res, next) => {
+async function renderFullContent(formOpts) {
   const d = await formila(formOpts);
-  const rendered = parse5.serialize(parse5.parse(`<body>
+  return parse5.serialize(parse5.parse(`<body>
   <style>
     html,
     body {
@@ -77,7 +63,34 @@ server.get('/demo', async (_, res, next) => {
   ${d.style}
   <main>${d.html}</main>
   <script src="./scripts/form.mjs" async></script>
-</body>`));
+</body>`))
+}
+
+server.use(restify.plugins.bodyParser({
+  mapParams: true,
+  mapFiles: true,
+  keepExtensions: true,
+}));
+
+server.get('/healthcheck', async (_, res) => {
+  return res.send('ok');
+});
+server.get('/scripts/*.m*js', restify.plugins.serveStatic({
+  maxAge: 10 * 60, /** 10 minutes */
+  appendRequestPath: false,
+  directory: './src/demo',
+}));
+
+server.get('/demo', async (_, res, next) => {
+  const rendered = await renderFullContent(formOptsJson);
+
+  res.writeHead(200, {
+    'content-type': 'text/html',
+  });
+  return res.end(rendered);
+});
+server.get('/demo2', async (_, res, next) => {
+  const rendered = await renderFullContent(formOpts);
 
   res.writeHead(200, {
     'content-type': 'text/html',

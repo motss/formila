@@ -75,14 +75,22 @@ function parseAttrs(attr: string) {
 }
 
 function getIdFromFieldTag(fieldTag: string) {
-  const { childNodes } = parseFragment(fieldTag);
-  const { attrs } = childNodes.find(n => /(input|select)/i.test(n.nodeName));
-  const { value } = attrs.find(n => /id/i.test(n.name));
-  const htmlFor = attrs.find(n => /for/i.test(n.name));
+  try {
+    const { childNodes } = parseFragment(fieldTag);
+    const { attrs } = childNodes.find(n => /(input|select)/i.test(n.nodeName));
+    const { value } = attrs.find(n => /id/i.test(n.name));
+    const htmlFor = attrs.find(n => /for/i.test(n.name));
 
-  return htmlFor == null
-    ? value
-    : '';
+    return htmlFor == null
+      ? value
+      : '';
+  } catch (e) {
+    console.error(`Invalid param 'fieldTag' (${
+      fieldTag
+    }). Please ensure it contains valid HTML tag and attributes.`);
+
+    throw e;
+  }
 }
 
 function serializeParsedFragment(content: string) {

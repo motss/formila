@@ -23,7 +23,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production gulp",
     "check": "npm run lint && npm run nsp",
-    "demo": "node --inspect -r esm src/demo",
+    "demo": "node --inspect -r esm dist/demo",
     "gulp": "gulp",
     "lint": "cross-env NODE_ENV=production gulp lint",
     "nsp": "nsp check",
