@@ -59,6 +59,11 @@ async function renderFullContent(formOpts) {
     .is-student-container {
       margin: 10px 0 0;
     }
+
+    .input-file__file-size {
+      color: #0070fb;
+      font-style: italic;
+    }
   </style>
   ${d.style}
   <main>${d.html}</main>

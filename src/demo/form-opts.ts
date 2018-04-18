@@ -154,7 +154,7 @@ export const formOpts: Partial<FormilaOpts> = {
           <div class="input-file__file-size hidden"></div>`,
           /** TODO: To validate file */
           // tslint:disable-next-line:max-line-length
-          description: 'Upload approval letter in .pdf format and it shall not exceed 300KB in size',
+          description: 'Upload approval letter and it shall not exceed 300KB in size',
           errorMessage: 'Pleases upload required document',
         },
       ],

@@ -157,21 +157,6 @@ function appendLabel(
   };
 }
 
-// function appendField(
-//   field: FormilaOptsFieldset['field']
-// ) {
-//   return field!.map((n) => {
-//     const {
-//       isPrefixed,
-//       ...restN
-//     } = n || {} as FormilaOptsFieldsetField;
-
-//     return appendLabel(n.isPrefixed!)(
-//       restN as Omit<FormilaOptsFieldsetField, 'isPrefiexed'>
-//     );
-//   }).join('\n');
-// }
-
 function appendFieldset(
   fieldset: FormilaOpts['fieldset']
 ) {
@@ -216,20 +201,6 @@ function appendFieldset(
     }).join('\n')
     : '';
 }
-
-// function appendHidden(
-//   hidden: FormilaOpts['hidden']
-// ) {
-//   try {
-//     return Array.isArray(hidden) && hidden.length > 0
-//       ? hidden!
-//           .map(n => `<input type="hidden" name="${n.name}" value="${n.value}"></input>`)
-//           .join('\n')
-//       : '';
-//   } catch (e) {
-//     throw e;
-//   }
-// }
 
 export function renderStyleSync() {
   return serializeParsedFragment(`<style>

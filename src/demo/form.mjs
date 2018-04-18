@@ -1,5 +1,17 @@
 // @ts-check
 
+function countFileSize(fileSize) {
+  switch (true) {
+    case fileSize < 1e3: return `${(fileSize / 1e3).toFixed(2)} B`;
+    case fileSize / 1e3 < 1e3: return `${(fileSize / 1e3).toFixed(2)} KB`;
+    case fileSize / 1e6 < 1e3: return `${(fileSize / 1e6).toFixed(2)} MB`;
+    case fileSize / 1e9 < 1e3: return `${(fileSize / 1e9).toFixed(2)} GB`;
+    case fileSize / 1e12 < 1e3: return `${(fileSize / 1e12).toFixed(2)} TB`;
+    case fileSize / 1e15 < 1e3: return `${(fileSize / 1e15).toFixed(2)} PB`;
+    default: return `File (> ${(fileSize / 1e15).toFixed(2)} PB) too big to be analyzed its file size!`;
+  }
+}
+
 function debouncer(cb, wait = 150, immediate = true) {
   let timeout = null;
 
@@ -63,6 +75,37 @@ async function initEventListeners() {
         updateLabelValidCls(targetEl.getAttribute('id'), isValid);
       }
     }));
+  });
+
+  /** NOTE: input[type=file] validator */
+  const inputFileEl = document.querySelector('input[type="file"]');
+
+  inputFileEl.addEventListener('change', (ev) => {
+    const targetEl = ev.target;
+    const uploadFile = Array.from(targetEl.files).find(n => n.name && n.size >= 0);
+    const approvalLetterLabelEl = document.querySelector('label[for="approval_letter"]');
+
+    /** NOTE: handle error when there is file that exceeds 300KB file size limit */
+    if (uploadFile == null || uploadFile.size > 300e3) {
+      const inputFileErrorMsgEl = approvalLetterLabelEl.querySelector('.error-msg');
+
+      if (inputFileErrorMsgEl) {
+        inputFileErrorMsgEl.textContent = `Unable to upload file (${uploadFile.name}) that exceeds 300KB (${countFileSize(uploadFile.size)})!`;
+      }
+
+      approvalLetterLabelEl && approvalLetterLabelEl.classList.add('is-invalid');
+      inputFileEl.setAttribute('aria-invalid', 'true');
+
+      return;
+    }
+
+    const inputFileSizeEl = document.querySelector('.input-file__file-size');
+
+    if (inputFileSizeEl) {
+      inputFileEl.setAttribute('aria-invalid', 'false');
+      approvalLetterLabelEl && approvalLetterLabelEl.classList.remove('is-invalid');
+      inputFileSizeEl.textContent = `File is ready to be uploaded. Total size is ${countFileSize(uploadFile.size)}.`
+    }
   });
 }
 
