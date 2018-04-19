@@ -116,7 +116,7 @@ function appendLabel(
     } = data || {} as Omit<FormilaOptsFieldsetField, 'isPrefixed'>;
 
     if (!/(id\=\")/i.test(fieldTag)) {
-      throw new Error('Missing required attribute \'id\' in opts[fieldTag]');
+      throw new Error(`Missing required attribute \'id\' in opts[fieldTag] (${fieldTag})`);
     }
 
     return `<div class="label-container ${

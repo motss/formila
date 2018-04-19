@@ -8,6 +8,7 @@ import { formila } from '../../dist';
 // @ts-ignore
 import formOptsJson from './json/form.json';
 import { formOpts } from './form-opts';
+import { shopPolymerFormOpts } from './shop-polymer-form-opts';
 
 const server = restify.createServer();
 
@@ -64,6 +65,11 @@ async function renderFullContent(formOpts) {
       color: #0070fb;
       font-style: italic;
     }
+
+    /** Shop polymer */
+    .hidden-different-ship-address {
+      display: none;
+    }
   </style>
   ${d.style}
   <main>${d.html}</main>
@@ -100,6 +106,12 @@ server.get('/demo2', async (_, res, next) => {
   res.writeHead(200, {
     'content-type': 'text/html',
   });
+  return res.end(rendered);
+});
+server.get('/shop-polymer', async (_, res, next) => {
+  const rendered = await renderFullContent(shopPolymerFormOpts);
+
+  res.writeHead(200, { 'content-type': 'text/html' });
   return res.end(rendered);
 });
 server.post('/demo', (req, res) => {
