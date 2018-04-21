@@ -1,41 +1,79 @@
 // @ts-check
 
-export declare interface FormilaOptsFieldsetField {
-  isPrefixed: boolean;
-  attrTag: string;
-  title: string;
-  fieldTag: string;
-  description: string;
-  errorMessage: string;
-}
-export declare interface FormilaOptsFieldset {
-  title: string;
-  subtitle: string;
-  attrTag: string;
-  field: Partial<FormilaOptsFieldsetField>[];
-}
-export declare interface FormilaOpts {
-  title: string;
-  subtitle: string;
-  attrTag: string;
-  hidden: {
-    name: string;
-    value: string;
-  }[];
-  fieldset: Partial<FormilaOptsFieldset>[];
-  errorMessage: string;
-  submitTitle: string;
-}
-export type Omit<T, U> = Pick<T, Exclude<keyof T, U>>;
-
 /** Import project dependencies */
 import parse5 from 'parse5';
 
-/** Setting up */
-export const ATTR_ID_REGEX = /.+id\=\"(.+?)\".*/i;
+export type Omit<T, U> = Pick<T, Exclude<keyof T, U>>;
+export declare interface Attr {
+  attr?: {
+    [key: string]: string;
+  };
+}
+export declare interface TitleSubTitle {
+  title?: string;
+  subtitle?: string;
+}
+export declare interface FormOptsHiddenList {
+  name: string;
+  value: string;
+}
+export declare interface FormOptsSectionListFieldListElementListField extends
+  Attr,
+  Omit<TitleSubTitle, 'subtitle'> {
+  fieldTag: string;
+  description?: string;
+  errorMessage?: string;
+}
+export declare interface FormOptsFieldList extends Attr {
+  elementList?: FormOptsSectionListFieldListElementListField[];
+  nonElementList?: string[];
+}
+export declare interface FormOptsFieldsetList extends Attr, TitleSubTitle {
+  fieldList?: FormOptsFieldList[];
+}
+export declare interface FormOptsSectionList extends Attr {
+  fieldsetList?: FormOptsFieldsetList[];
+}
 
-function parseFieldTagFragment(fieldTag: string) {
-  const parsedFragment = parseFragment(fieldTag);
+export declare interface FormilaOpts extends Attr, TitleSubTitle {
+  hiddenList?: FormOptsHiddenList[];
+  sectionList?: FormOptsSectionList[];
+
+  errorMessage?: string;
+  submitTitle?: string;
+}
+
+export const ELEMENT_ID_REGEXP = /.*<(?:input|select)[\s\S]*\sid\=\"(.+?)\"[\s\S]*\>[\s\S]*/i;
+
+function parseAttr(attr: NonNullable<Attr>, omit?: string|string[]) {
+  const parsedOmit = omit == null
+    ? []
+    : Array.isArray(omit) ? omit : [omit];
+
+  return parse5.serialize(parse5.parseFragment(
+    Object.keys(attr)
+      .reduce<string[]>((p, n) => {
+        if (parsedOmit.length > 0 && parsedOmit.includes(n)) {
+          return p;
+        }
+
+        return p.concat(`${n}=${attr[n]}`);
+      }, [])
+      .join(' ')
+  ));
+}
+
+function parseNonElementList(
+  nonElementList: NonNullable<FormOptsSectionListFieldList['nonElementList']>
+) {
+  return nonElementList.map((n) => {
+    return n;
+  })
+    .join('');
+}
+
+function parseFieldTag(fieldTag: string, hasErrorMessage: boolean) {
+  const parsedFragment = parse5.parseFragment(fieldTag);
   const newParsedFragment = {
     ...parsedFragment,
     childNodes: parsedFragment.childNodes.map((n) => {
@@ -46,18 +84,16 @@ function parseFieldTagFragment(fieldTag: string) {
       const attrsMap = new Map([
         ...n.attrs.map(nn => [nn.name, nn.value]),
         ['aria-invalid', 'false'],
-        ['aria-required', 'false'],
+        ['aria-required', hasErrorMessage ? 'true' : 'false'],
       ]);
 
-      if (attrsMap.has('required')) {
-        attrsMap.set('aria-required', 'true');
+      if (hasErrorMessage && !attrsMap.has('required')) {
+        attrsMap.set('required', '');
       }
 
       return {
         ...n,
-        attrs: [...attrsMap].map((nn) => {
-          return { name: nn[0], value: nn[1] };
-        }),
+        attrs: [...attrsMap].map(nn => ({ name: nn[0], value: nn[1] })),
       };
     }),
   };
@@ -65,145 +101,90 @@ function parseFieldTagFragment(fieldTag: string) {
   return parse5.serialize(newParsedFragment);
 }
 
-function parseAttrs(attr: string) {
-  const { childNodes } = parseFragment(`<div ${attr}></div>`);
-  const { attrs } = childNodes.find(n => n.nodeName === 'div');
-
-  return Array.isArray(attrs) && attrs.length > 0
-    ? ` ${attrs.map(n => `${n.name}="${n.value}"`).join(' ')}`
-    : '';
-}
-
-function getIdFromFieldTag(fieldTag: string) {
-  try {
-    const { childNodes } = parseFragment(fieldTag);
-    const { attrs } = childNodes.find(n => /(input|select)/i.test(n.nodeName));
-    const { value } = attrs.find(n => /id/i.test(n.name));
-    const htmlFor = attrs.find(n => /for/i.test(n.name));
-
-    return htmlFor == null
-      ? value
-      : '';
-  } catch (e) {
-    console.error(`Invalid param 'fieldTag' (${
-      fieldTag
-    }). Please ensure it contains valid HTML tag and attributes.`);
-
-    throw e;
-  }
-}
-
-function serializeParsedFragment(content: string) {
-  return parse5.serialize(parseFragment(content));
-}
-
-function parseFragment(content: string) {
-  return parse5.parseFragment(content);
-}
-
-function appendLabel(
-  isPrefixed: FormilaOptsFieldsetField['isPrefixed']
+function parseElementList(
+  elementList: NonNullable<FormOptsSectionListFieldList['elementList']>
 ) {
-  return function appendInput(
-    data: Omit<FormilaOptsFieldsetField, 'isPrefixed'>
-  ) {
-    const {
-      attrTag,
-      description,
-      errorMessage,
-      fieldTag,
-      title,
-    } = data || {} as Omit<FormilaOptsFieldsetField, 'isPrefixed'>;
+  return elementList.map((n, i) => {
+    const parsedFieldTag = n.fieldTag == null
+      ? ''
+      : parseFieldTag(
+        n.fieldTag,
+        typeof n.errorMessage === 'string' && n.errorMessage.length > 0
+      );
+    const hasParsedFieldTag = typeof parsedFieldTag === 'string' && parsedFieldTag.length > 0;
 
-    if (!/(id\=\")/i.test(fieldTag)) {
-      throw new Error(`Missing required attribute \'id\' in opts[fieldTag] (${fieldTag})`);
+    if (hasParsedFieldTag && !ELEMENT_ID_REGEXP.test(parsedFieldTag)) {
+      throw new Error(
+        `Missing required attribute 'id' in elementList[${i}] (${n.fieldTag})`
+      );
     }
 
-    return `<div class="label-container ${
-      attrTag == null
-        ? ''
-        : attrTag.replace(/.*class\=\"(.+?)\".*/gi, '$1')
-    }"${
-      attrTag == null
-        ? ''
-        : parseAttrs(attrTag.replace(/\s*class\=\".+?\"/gi, ''))
-    }>
-    <label for="${getIdFromFieldTag(fieldTag)}">${
-      title == null
-        ? ''
-        : `<div class="input-title">${title}</div>`
-    }${
-      typeof isPrefixed !== 'boolean' || !isPrefixed
-        ? ''
-        : `<div class="prefixed-input${description == null ? '' : ' has-description'}">`
-    }${
-      fieldTag == null
-        ? ''
-        : parseFieldTagFragment(fieldTag)
-    }
-    ${
-      description == null
-        ? ''
-        : `<div class="input-description">${description}</div>`
-    }
-    ${
-      isPrefixed ? '</div>' : ''
-    }${
-      errorMessage == null
-        ? ''
-        : `<div class="error-msg" role="alert">${errorMessage}</div>`
-    }</label>
+    const elementId = hasParsedFieldTag ? parsedFieldTag.replace(ELEMENT_ID_REGEXP, '$1') : '';
+
+    console.log('# elementId', parsedFieldTag);
+
+    return `<div class="form__label-container ${
+      n.attr == null || n.attr.class == null ? '' : n.attr.class
+    }" ${n.attr == null ? '' : parseAttr(n.attr, 'class')}>
+      <label for="${elementId}">
+        ${n.description == null ? '' : `<div class="prefixed-input has-description">`}
+
+        ${n.title == null ? '' : `<div class="input-title">${n.title}</div>`}
+
+        ${parsedFieldTag}
+
+        ${
+          n.description == null
+            ? ''
+            : `<div class="input-description">${n.description}</div>`
+        }
+
+        ${n.description == null ? '' : `</div>`}
+
+        ${
+          n.errorMessage == null
+            ? ''
+            : `<div class="error-msg" role="alert" aria-hidden="true">${n.errorMessage}</div>`
+        }
+      </label>
     </div>`;
-  };
+  })
+    .join('');
 }
 
-function appendFieldset(
-  fieldset: FormilaOpts['fieldset']
-) {
-  return Array.isArray(fieldset) && fieldset.length > 0
-    ? fieldset.map(({ title, subtitle, attrTag, field }) => {
-      return `<fieldset>
-        ${
-          title == null
-            ? ''
-            : `<legend>${title}</legend>`
-        }
-        ${
-          subtitle == null
-            ? ''
-            : `<div class="fieldset__subtitle">${subtitle}</div>`
-        }
-        ${
-          Array.isArray(field) && field.length > 0
-            ? `<div class="fields-container ${
-              attrTag == null
-                ? ''
-                : attrTag.replace(/.*class\=\"(.+?)\".*/gi, '$1')
-            }"${
-              attrTag == null
-                ? ''
-                : parseAttrs(attrTag.replace(/\s*class\=\".+?\"/gi, ''))
-            }>${
-              field.map((n) => {
-                const {
-                  isPrefixed,
-                  ...restN
-                } = n || {} as FormilaOptsFieldsetField;
+function parseHiddenList(hiddenList: NonNullable<FormilaOpts['hiddenList']>) {
+  return `<fieldset>${
+    hiddenList.map(n => `<input type="hidden" name="${n.name}" value="${n.value}">`).join('')
+  }</fieldset>`;
+}
 
-                return appendLabel(n.isPrefixed!)(
-                  restN as Omit<FormilaOptsFieldsetField, 'isPrefiexed'>
-                );
-              }).join('\n')
-            }</div>`
+function parseFieldsetList(fieldsetList: NonNullable<FormilaOpts['fieldsetList']>) {
+  return `<div class="form__body">${
+    fieldsetList.map((n) => {
+      return `<fieldset ${n.attr == null ? '' : parseAttr(n.attr)}>
+        ${n.title == null ? '' : `<legend class="fieldset__title">${n.title}</legend>`}
+        ${n.subtitle == null ? '' : `<p class="fieldset__subtitle">${n.subtitle}</p>`}
+
+        ${
+          Array.isArray(n.sectionList) && n.sectionList.length > 0
+            ? n.sectionList.map((ns) => {
+              return `<section ${ns.attr == null ? '' : parseAttr(ns.attr)}>${
+                Array.isArray(ns.elementList) && ns.elementList.length > 0
+                  ? parseElementList(ns.elementList)
+                  : Array.isArray(ns.nonElementList) && ns.nonElementList.length > 0
+                    ? parseNonElementList(ns.nonElementList)
+                    : ''
+              }</section>`;
+            }).join('')
             : ''
         }
       </fieldset>`;
-    }).join('\n')
-    : '';
+    }).join('')
+  }</div>`;
 }
 
-export function renderStyleSync() {
-  return serializeParsedFragment(`<style>
+function renderFormStyle() {
+  return parse5.serialize(parse5.parseFragment(`<style>
   /** [START] Reset element style */
   button {
     -webkit-appearance: none;
@@ -307,7 +288,7 @@ export function renderStyleSync() {
     margin: 1.5em 0 1em;
   }
 
-  .btn-container {
+  .buttons-container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -315,8 +296,8 @@ export function renderStyleSync() {
 
     margin: 24px 40px 64px;
   }
-  .btn-container > button[type=submit],
-  .btn-container > button[type=button] {
+  .buttons-container > button[type=submit],
+  .buttons-container > button[type=button] {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -333,14 +314,14 @@ export function renderStyleSync() {
     border-radius: 2px;
     text-transform: uppercase;
   }
-  .btn-container > button[type=submit]:focus,
-  .btn-container > button[type=submit]:active,
-  .btn-container > button[type=button]:focus,
-  .btn-container > button[type=button]:active {
+  .buttons-container > button[type=submit]:focus,
+  .buttons-container > button[type=submit]:active,
+  .buttons-container > button[type=button]:focus,
+  .buttons-container > button[type=button]:active {
     font-weight: 700;
   }
-  .btn-container > button[type=submit]::after,
-  .btn-container > button[type=button]::after {
+  .buttons-container > button[type=submit]::after,
+  .buttons-container > button[type=button]::after {
     position: absolute;
     content: '';
     display: block;
@@ -355,92 +336,80 @@ export function renderStyleSync() {
     opacity: 0;
     transition: opacity 250ms cubic-bezier(0, 0, .4, 1);
   }
-  .btn-container > button[type=submit]:focus::after,
-  .btn-container > button[type=submit]:active::after,
-  .btn-container > button[type=button]:focus::after,
-  .btn-container > button[type=button]:active::after {
+  .buttons-container > button[type=submit]:focus::after,
+  .buttons-container > button[type=submit]:active::after,
+  .buttons-container > button[type=button]:focus::after,
+  .buttons-container > button[type=button]:active::after {
     opacity: .1;
   }
-</style>`);
+</style>`));
 }
 
-export function renderFormSync(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
+export function renderForm(
+  data: FormilaOpts
+) {
+  if (data == null) {
+    return '';
+  }
+
   const {
+    attr,
     title,
     subtitle,
-    attrTag,
-    hidden = [] as FormilaOpts['hidden'],
-    fieldset = [] as FormilaOpts['fieldset'],
+
+    hiddenList,
+
+    sectionList,
+
     errorMessage,
     submitTitle,
-  } = opts;
+  } = data;
 
-  return serializeParsedFragment(`<form${
-    attrTag == null
+  return parse5.serialize(parse5.parseFragment(`<form ${attr == null ? '' : parseAttr(attr)}>
+  ${
+    title == null
       ? ''
-      : ` ${attrTag}`
-  }>
-    ${
-      title == null
-        ? ''
-        : `<h2 class="form__title">${title}</h2>`
-    }
-    ${
-      subtitle == null
-        ? ''
-        : `<p class="form__subtitle">${subtitle}</p>`
-    }
+      : `<h1 class="form__title">${title}</h1>`
+  }
+  ${
+    subtitle == null
+      ? ''
+      : `<p class="form_subtitle">${subtitle}</p>`
+  }
 
-    ${
-      hidden == null
-        ? ''
-        : `<div class="form__hidden-input-container">${
-          Array.isArray(hidden) && hidden.length > 0
-            ? hidden
-                .map(n => `<input type="hidden" name="${n.name}" value="${n.value}"></input>`)
-                .join('\n')
-            : ''
-        }</div>`
-    }
+  ${
+    Array.isArray(hiddenList) && hiddenList.length > 0
+      ? parseHiddenList(hiddenList)
+      : ''
+  }
 
-    ${appendFieldset(fieldset)}
+  ${
+    Array.isArray(fieldsetList) && fieldsetList.length > 0
+    ? parseFieldsetList(fieldsetList)
+    : ''
+  }
 
-    ${
-      errorMessage == null
-        ? ''
-        : `<div class="form__error-msg">${errorMessage}</div>`
-    }
+  ${
+    errorMessage == null
+      ? ''
+      : `<div class="form__error-message">${errorMessage}</div>`
+  }
 
-    <div class="btn-container">
-      <button type="submit">${
-        submitTitle == null
-          ? 'Submit'
-          : submitTitle
-      }</button>
-    </div>
-  </form>`);
+  <div class="buttons-container">
+    <button type="submit">${submitTitle == null ? 'Submit' : submitTitle}</button>
+  </div>
+</form>`));
 }
 
-export async function renderStyle() {
-  return renderStyleSync();
-}
-
-export async function renderForm(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
-  return renderFormSync(opts);
-}
-
-export function formilaSync(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
+export function formilaSync(opts: FormilaOpts) {
   return {
-    html: renderFormSync(opts),
-    style: renderStyleSync(),
+    html: renderForm(opts),
+    style: renderFormStyle(),
   };
 }
 
-export async function formila(opts: Partial<FormilaOpts> = {} as FormilaOpts) {
-  return {
-    html: await renderForm(opts),
-    style: await renderStyle(),
-  };
+export async function formila(opts: FormilaOpts) {
+  return formilaSync(opts);
 }
 
 export default formila;

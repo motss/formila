@@ -6,14 +6,16 @@ import parse5 from 'parse5';
 
 import { formila } from '../../dist';
 // @ts-ignore
-import formOptsJson from './json/form.json';
-import { formOpts } from './form-opts';
-import { shopPolymerFormOpts } from './shop-polymer-form-opts';
+// import formOptsJson from './json/form.json';
+// import { formOpts } from './form-opts';
+// import { shopPolymerFormOpts } from './shop-polymer-form-opts';
+import { newFormOpts } from './new-form-opts';
 
 const server = restify.createServer();
 
 async function renderFullContent(formOpts) {
   const d = await formila(formOpts);
+
   return parse5.serialize(parse5.parse(`<body>
   <style>
     html,
@@ -93,21 +95,21 @@ server.get('/scripts/*.m*js', restify.plugins.serveStatic({
 }));
 
 server.get('/demo', async (_, res, next) => {
-  const rendered = await renderFullContent(formOptsJson);
+  const rendered = await renderFullContent(newFormOpts);
 
   res.writeHead(200, {
     'content-type': 'text/html',
   });
   return res.end(rendered);
 });
-server.get('/demo2', async (_, res, next) => {
-  const rendered = await renderFullContent(formOpts);
+// server.get('/demo2', async (_, res, next) => {
+//   const rendered = await renderFullContent(formOpts);
 
-  res.writeHead(200, {
-    'content-type': 'text/html',
-  });
-  return res.end(rendered);
-});
+//   res.writeHead(200, {
+//     'content-type': 'text/html',
+//   });
+//   return res.end(rendered);
+// });
 server.get('/shop-polymer', async (_, res, next) => {
   const rendered = await renderFullContent(shopPolymerFormOpts);
 
