@@ -51,7 +51,7 @@ async function renderFullContent(formOpts) {
 
     form {
       max-width: calc(100% / 16 * 9);
-      width: auto;
+      width: 100%;
       margin: 0 auto;
       padding: 16px 24px;
       box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
@@ -72,8 +72,14 @@ async function renderFullContent(formOpts) {
     .hidden-different-ship-address {
       display: none;
     }
+
+    @media screen and (max-width: 600px) {
+      form {
+        max-width: 100%;
+      }
+    }
   </style>
-  ${d.style}
+  <link rel="stylesheet" href="/index.css">
   <main>${d.html}</main>
   <script src="./scripts/form.mjs" async></script>
 </body>`))
@@ -88,6 +94,11 @@ server.use(restify.plugins.bodyParser({
 server.get('/healthcheck', async (_, res) => {
   return res.send('ok');
 });
+server.get('/index.css', restify.plugins.serveStatic({
+  maxAge: 10 * 60,
+  appendRequestPath: false,
+  directory: './src/demo',
+}));
 server.get('/scripts/*.m*js', restify.plugins.serveStatic({
   maxAge: 10 * 60, /** 10 minutes */
   appendRequestPath: false,
@@ -97,9 +108,6 @@ server.get('/scripts/*.m*js', restify.plugins.serveStatic({
 server.get('/demo', async (_, res, next) => {
   const rendered = await renderFullContent(newFormOpts);
 
-  res.writeHead(200, {
-    'content-type': 'text/html',
-  });
   return res.end(rendered);
 });
 // server.get('/demo2', async (_, res, next) => {

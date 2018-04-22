@@ -1,0 +1,133 @@
+/** [START] Reset element styles **/
+button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-color: inherit;
+  color: inherit;
+  font-size: inherit;
+  border: none;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+legend {
+  display: block;
+  margin: 1em 0;
+  font-size: 1.17em;
+  font-weight: 700;
+}
+/** [END] Reset element styles **/
+
+/** [START] Combined styles */
+fieldset > .form-fieldset__field > .form__label-container,
+.input-container > input:not([type="checkbox"]):not([type="radio"]),
+.input-container > select {
+  flex: 1 0 auto;
+}
+fieldset > .form-fieldset__field > .form__label-container + .form__label-container,
+.input-container > input:not([type="checkbox"]):not([type="radio"]) + input:not([type="checkbox"]):not([type="radio"]),
+.input-container > select + select,
+.form-fieldset-field__non-element > * + * {
+  margin: 0 0 0 1em;
+}
+
+fieldset > .form-fieldset__field,
+.input-container,
+.form-fieldset-field__non-element,
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+/** [END] Combined styles */
+
+/** [START] fieldset */
+/** [END] fieldset */
+
+/** [START] .input-container */
+/** [END] .input-container flex
+
+/** [START] error */
+.input-container + .error-msg,
+form > .form__error-msg {
+  display: none;
+  color: #ff1744;
+  color: var(--error-msg-color, #ff1744);
+}
+:not(output):-moz-ui-invalid {
+  box-shadow: none;
+}
+.input-container > input:not([type="checkbox"]):not([type="radio"])[aria-invalid="true"]:invalid,
+.input-container > select[aria-invalid="true"]:invalid {
+  border: 1px solid #ff1744;
+  border: 1px solid var(--error-msg-color, #ff1744);
+}
+label[for].is-invalid .input-title,
+form > .form__error-msg {
+  color: #ff1744;
+  color: var(--error-msg-color, #ff1744);
+}
+label[for].is-invalid > .error-msg,
+form.is-invalid > .form__error-msg {
+  display: block;
+}
+form.is-invalid > .form__error-msg {
+  margin: .75em 0;
+}
+/** [END] error */
+
+/** [START] non-element field */
+.form__label-container,
+.form-fieldset-field__non-element {
+  margin: 0 0 .75em 0;
+}
+.form-fieldset-field__non-element > * {
+  flex: 1;
+}
+/** [END] non-element field */
+
+/** [START] button */
+.buttons-container {
+  margin: 24px 0 64px;
+}
+.buttons-container > button[type="submit"],
+.buttons-container > button[type="button"] {
+  position: relative;
+  margin: 0;
+  padding: 8px 24px;
+  background-color: #fff;
+  color: #000;
+  background-color: var(--button-bg-color, #fff);
+  color: var(--button-color, #000);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 0;
+  border: 2px solid #000;
+  border: 2px solid var(--button-border-color, #000);
+  text-decoration: none;
+  text-transform: uppercase;
+  outline: none;
+}
+.buttons-container > button[type="submit"]:focus,
+.buttons-container > button[type="button"]:focus {
+  background-color: rgba(0, 0, 0, .15);
+  background-color: var(--button-focus-bg-color, rgba(0, 0, 0, .15));
+}
+.buttons-container > button[type="submit"]:active,
+.buttons-container > button[type="button"]:active {
+  background-color: #000;
+  color: #fff;
+  background-color: var(--button-active-bg-color, #000);
+  color: var(--button-active-color, #fff);
+}
+/** [END] button */
