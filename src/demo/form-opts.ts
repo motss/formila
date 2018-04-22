@@ -1,165 +1,205 @@
-// // @ts-check
+// @ts-check
 
-// import { FormilaOpts } from '..';
+import { FormilaOpts } from '..';
 
-// export const formOpts: Partial<FormilaOpts> = {
-//   title: 'My quote',
-//   attrTag: `class="quote-form"
-//   method="POST"
-//   action="/demo"
-//   enctype="multipart/form-data"`,
-//   hidden: [
-//     {
-//       name: '_csft',
-//       value: '5043645235331072',
-//     },
-//     {
-//       name: 'signed_request',
-//       value: '2153116719906816',
-//     },
-//   ],
-//   fieldset: [
-//     {
-//       title: 'Personal information',
-//       field: [
-//         {
-//           title: 'Name',
-//           fieldTag: `<input id="name"
-//           type="text"
-//           maxlength="80"
-//           required
-//           pattern="^[a-zA-Z .,+\\-@\\/()'*]*$">`,
-//           errorMessage: 'Invalid name',
-//         },
-//         {
-//           isPrefixed: true,
-//           title: 'Date of birth',
-//           fieldTag: `<input id="dob"
-//           type="date"
-//           name="dob"
-//           required
-//           pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}">`,
-//         },
-//         {
-//           title: 'NRIC/ FIN No.',
-//           fieldTag: `<input id="nric_fin"
-//           type="text"
-//           name="nric_fin"
-//           minlength="9"
-//           required>`,
-//           errorMessage: 'Invalid NRIC/ FIN no.',
-//         },
-//       ],
-//     },
+export const formOpts: FormilaOpts = {
+  attr: {
+    class: 'quote-form',
+    method: 'post',
+    action: '/demo',
+    enctype: 'multipart/form-data',
+  },
 
-//     {
-//       subtitle: 'Gender',
-//       attrTag: `class="gender-container"`,
-//       field: [
-//         {
-//           attrTag: `calss="gender-male"`,
-//           fieldTag: `<input id="gender_male"
-//           type="radio"
-//           name="gender"
-//           checked><span>Male</span>`,
-//         },
-//         {
-//           attrTag: `class="gender-female"`,
-//           fieldTag: `<input id="gender_female"
-//           type="radio"
-//           name="gender"><span>Female</span>`,
-//         },
-//         {
-//           title: `Please check this if you're a student`,
-//           attrTag: `class="is-student-container"`,
-//           fieldTag: `<input id="is_student"
-//           type="checkbox"
-//           name="is_student"><span>Student</span>`,
-//         },
-//       ],
-//     },
+  title: 'My quote',
 
-//     {
-//       title: 'Contact details',
-//       field: [
-//         {
-//           title: 'Email',
-//           fieldTag: `<input id="email"
-//           type="text"
-//           name="email"
-//           required
-//           maxlength="40"
-//           pattern="[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}$">`,
-//           errorMessage: 'Invalid email',
-//         },
-//         {
-//           title: 'Confirm email',
-//           fieldTag: `<input id="confirm_email"
-//           type="text"
-//           name="confirm_email"
-//           required
-//           maxlength="40"
-//           pattern="[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}$">`,
-//           errorMessage: 'Invalid confirm email',
-//         },
-//         {
-//           title: 'Mobile phone',
-//           fieldTag: `<input id="mobile"
-//           type="text"
-//           required
-//           minlength="8"
-//           pattern="^[8-9][0-9]{7}">`,
-//           errorMessage: 'Invalid mobile number',
-//         },
-//       ],
-//     },
+  hiddenList: [
+    {
+      name: '_csrf',
+      value: '5748383218139136',
+    },
+    {
+      name: 'signed_request',
+      value: '537295247638528',
+    },
+  ],
 
-//     {
-//       title: 'Mailing address',
-//       field: [
-//         {
-//           title: 'Postal code',
-//           fieldTag: `<input id="postal"
-//           type="text"
-//           name="postal"
-//           required
-//           minlength="6"
-//           maxlength="6"
-//           pattern="^[0-9]{6}">`,
-//           errorMessage: 'Invalid postal code',
-//         },
-//         {
-//           title: 'Street name',
-//           fieldTag: `<input id="street"
-//           type="text"
-//           name="street"
-//           required
-//           maxlength="40"
-//           pattern="[a-zA-Z0-9 &(),+\\-#\\/!:@'.]*$">`,
-//           errorMessage: 'Invalid street name',
-//         },
-//       ],
-//     },
+  sectionList: [
+    {
+      fieldsetList: [
+        {
+          title: 'Personal information',
+          fieldList: [
+            {
+              elementList: [
+                {
+                  title: 'Name',
+                  fieldTag: `<input id="name"
+                  type="text"
+                  maxlength="80"
+                  pattern="^.{1,}"
+                  autofocus>`,
+                  errorMessage: 'Invalid name',
+                },
+              ],
+            },
 
-//     {
-//       title: 'Approval letter',
-//       field: [
-//         {
-//           isPrefixed: true,
-//           title: 'Approval letter',
-//           fieldTag: `<input id="approval_letter"
-//           class="input__file-uploader"
-//           type="file"
-//           name="approval_letter">
-//           <div class="input-file__file-size hidden"></div>`,
-//           /** TODO: To validate file */
-//           // tslint:disable-next-line:max-line-length
-//           description: 'Upload approval letter and it shall not exceed 300KB in size',
-//           errorMessage: 'Pleases upload required document',
-//         },
-//       ],
-//     },
-//   ],
-//   errorMessage: 'Invalid filed foudn in the form',
-//   submitTitle: 'Next',
-// };
+            {
+              elementList: [
+                {
+                  title: 'Date of birth',
+                  fieldTag: `<input id="dob"
+                  type="date"
+                  name="dob"
+                  pattern="\\d{2}/\\d{2}/\\d{4}">`,
+                  errorMessage: 'Invalid date of birth',
+                },
+              ],
+            },
+
+            {
+              elementList: [
+                {
+                  title: 'NRIC/ FIN No.',
+                  fieldTag: `<input id="nric_fin"
+                  type="text"
+                  name="nric_fin"
+                  minlength="9">`,
+                  errorMessage: 'Invalid NRIC/ FIN No.',
+                },
+              ],
+            },
+
+            {
+              elementList: [
+                {
+                  title: 'Gender',
+                  fieldTag: `<input id="gender_male"
+                  type="radio"
+                  name="gender"
+                  checked><span>Male</span>
+                  <input id="gender_female"
+                  type="radio"
+                  name="gender"><span>Female</span>`,
+                },
+              ],
+            },
+
+            {
+              elementList: [
+                {
+                  title: '',
+                  fieldTag: `<input id="isStudent"
+                  type="checkbox"
+                  name="isStudent"><span>Please check this if you're a student</span>`,
+                },
+              ],
+            },
+
+          ],
+        },
+
+        {
+          title: 'Contact details',
+          fieldList: [
+            {
+              elementList: [
+                {
+                  title: 'Email',
+                  fieldTag: `<input id="email"
+                  type="text"
+                  name="email"
+                  maxlength="40"
+                  pattern="[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}$">`,
+                  errorMessage: 'Invalid email',
+                },
+              ],
+            },
+
+            {
+              elementList: [
+                {
+                  title: 'Confirm email',
+                  fieldTag: `<input id="confirmEmail"
+                  type="text"
+                  name="confirmEmail"
+                  maxlength="40"
+                  pattern="[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,3}$">`,
+                  errorMessage: 'Invalid confirm email',
+                },
+              ],
+            },
+
+            {
+              elementList: [
+                {
+                  title: 'Mobile phone',
+                  fieldTag: `<input id="mobile"
+                  type="tel"
+                  minlength="8"
+                  pattern="^[8-9][0-9]{7}">`,
+                  errorMessage: 'Invalid mobile number',
+                },
+              ],
+            },
+
+          ],
+        },
+
+        {
+          title: 'Mailing address',
+          fieldList: [
+            {
+              elementList: [
+                {
+                  title: 'Postal code',
+                  fieldTag: `<input id="postal"
+                  type="text"
+                  minlength="6"
+                  maxlength="6"
+                  pattern="^[0-9]{6}">`,
+                  errorMessage: 'Invalid postal code',
+                },
+              ],
+            },
+
+            {
+              elementList: [
+                {
+                  title: 'Street name',
+                  fieldTag: `<input id="street"
+                  type="text"
+                  name="street"
+                  maxlength="40"
+                  pattern="[a-zA-Z0-9 &(),+\\-#\\/!:@'.]*$">`,
+                  errorMessage: 'Invalid street name',
+                },
+              ],
+            },
+          ],
+        },
+
+        {
+          title: 'Approval letter',
+          fieldList: [
+            {
+              elementList: [
+                {
+                  title: 'Approval letter',
+                  fieldTag: `<input id="approvalLetter"
+                  type="file"
+                  name="approvalLetter"><div class="input-file__file-size hidden"></div>`,
+                  description: 'Upload approval letter and it shall not exceed 300KB in size',
+                  errorMessage: 'Please upload required document',
+                },
+              ],
+            },
+          ],
+        },
+
+      ],
+    },
+  ],
+
+  errorMessage: 'Form with invalid field',
+  submitTitle: 'next',
+};

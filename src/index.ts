@@ -116,8 +116,6 @@ function parseElementList(
       n.attr == null || n.attr.class == null ? '' : n.attr.class
     }" ${n.attr == null ? '' : parseAttr(n.attr, 'class')}>
       <label for="${elementId}">
-        ${n.description == null ? '' : `<div class="prefixed-input has-description">`}
-
         ${n.title == null ? '' : `<div class="input-title">${n.title}</div>`}
 
         ${
@@ -131,8 +129,6 @@ function parseElementList(
             ? ''
             : `<div class="input-description">${n.description}</div>`
         }
-
-        ${n.description == null ? '' : `</div>`}
 
         ${
           n.errorMessage == null
@@ -195,42 +191,8 @@ function parseSectionList(sectionList: NonNullable<FormOptsSectionList[]>) {
 
 function renderFormStyle() {
   return parse5.serialize(parse5.parseFragment(`<style>
-  .prefixed-input {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  .prefixed-input.has-description {
-    flex-direction: column;
-    align-items: inherit;
-  }
-  label > input[type="radio"],
-  label > .prefixed-input > input[type="radio"],
-  label > .prefixed-input > input[type="checkbox"] {
-    margin: 3px 8px 3px 3px;
-  }
-  label > input:not([type="radio"]):not([type="checkbox"])[aria-invalid=false],
-  label:not(.is-invalid) > .prefixed-input,
-  label.is-invalid > .prefixed-input + .error-msg,
-  label > input[aria-invalid=true] + .error-msg,
-  label > select {
-    margin: 0 0 10px;
-  }
 
-  label > .prefixed-input > .input-description {
-    font-size: .8em;
-    font-style: italic;
-    color: rgba(0, 0, 0, .75);
-    color: var(--input-description-color, rgba(0, 0, 0, .75));
-  }
-
-  label > input[aria-invalid=true],
-  label > input[aria-invalid=false] + .error-msg,
-  label.is-invalid > .prefixed-input,
-  label:not(.is-invalid) > .prefixed-input + .error-msg {
-    margin: 0;
-  }
-</style>`));
+  </style>`));
 }
 
 export function renderForm(

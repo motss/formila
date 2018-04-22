@@ -55,10 +55,19 @@ fieldset > .form-fieldset__field,
 /** [END] fieldset */
 
 /** [START] .input-container */
-/** [END] .input-container flex
+legend.form-fieldset__title {
+  text-transform: capitalize;
+}
+label[for] > .input-description {
+  font-size: .9em;
+  font-style: italic;
+  color: rgba(0, 0, 0, .65);
+  color: var(--input-description-color, rgba(0, 0, 0, .65));
+}
+/** [END] .input-container */
 
 /** [START] error */
-.input-container + .error-msg,
+label[for] > .error-msg,
 form > .form__error-msg {
   display: none;
   color: #ff1744;

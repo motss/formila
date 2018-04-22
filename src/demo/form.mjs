@@ -83,7 +83,7 @@ async function initEventListeners() {
   inputFileEl.addEventListener('change', (ev) => {
     const targetEl = ev.target;
     const uploadFile = Array.from(targetEl.files).find(n => n.name && n.size >= 0);
-    const approvalLetterLabelEl = document.querySelector('label[for="approval_letter"]');
+    const approvalLetterLabelEl = document.querySelector('label[for="approvalLetter"]');
 
     /** NOTE: handle error when there is file that exceeds 300KB file size limit */
     if (uploadFile == null || uploadFile.size > 300e3) {

@@ -7,9 +7,8 @@ import parse5 from 'parse5';
 import { formila } from '../../dist';
 // @ts-ignore
 // import formOptsJson from './json/form.json';
-// import { formOpts } from './form-opts';
-// import { shopPolymerFormOpts } from './shop-polymer-form-opts';
-import { newFormOpts } from './new-form-opts';
+import { formOpts } from './form-opts';
+import { shopPolymerFormOpts } from './shop-polymer-form-opts';
 
 const server = restify.createServer();
 
@@ -106,18 +105,10 @@ server.get('/scripts/*.m*js', restify.plugins.serveStatic({
 }));
 
 server.get('/demo', async (_, res, next) => {
-  const rendered = await renderFullContent(newFormOpts);
+  const rendered = await renderFullContent(formOpts);
 
   return res.end(rendered);
 });
-// server.get('/demo2', async (_, res, next) => {
-//   const rendered = await renderFullContent(formOpts);
-
-//   res.writeHead(200, {
-//     'content-type': 'text/html',
-//   });
-//   return res.end(rendered);
-// });
 server.get('/shop-polymer', async (_, res, next) => {
   const rendered = await renderFullContent(shopPolymerFormOpts);
 
