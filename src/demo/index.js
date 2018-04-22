@@ -5,8 +5,6 @@ import restify from 'restify';
 import parse5 from 'parse5';
 
 import { formila } from '../../dist';
-// @ts-ignore
-// import formOptsJson from './json/form.json';
 import { formOpts } from './form-opts';
 import { shopPolymerFormOpts } from './shop-polymer-form-opts';
 
@@ -15,7 +13,8 @@ const server = restify.createServer();
 async function renderFullContent(formOpts) {
   const d = await formila(formOpts);
 
-  return parse5.serialize(parse5.parse(`<body>
+  return parse5.serialize(parse5.parse(`<link rel="stylesheet" href="/index.css">
+<body>
   <style>
     html,
     body {
@@ -78,8 +77,7 @@ async function renderFullContent(formOpts) {
       }
     }
   </style>
-  <link rel="stylesheet" href="/index.css">
-  <main>${d.html}</main>
+  <main>${d}</main>
   <script src="./scripts/form.mjs" async></script>
 </body>`))
 }
@@ -96,12 +94,12 @@ server.get('/healthcheck', async (_, res) => {
 server.get('/index.css', restify.plugins.serveStatic({
   maxAge: 10 * 60,
   appendRequestPath: false,
-  directory: './src/demo',
+  directory: './dist',
 }));
 server.get('/scripts/*.m*js', restify.plugins.serveStatic({
   maxAge: 10 * 60, /** 10 minutes */
   appendRequestPath: false,
-  directory: './src/demo',
+  directory: './dist/demo',
 }));
 
 server.get('/demo', async (_, res, next) => {

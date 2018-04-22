@@ -189,12 +189,6 @@ function parseSectionList(sectionList: NonNullable<FormOptsSectionList[]>) {
     .join('');
 }
 
-function renderFormStyle() {
-  return parse5.serialize(parse5.parseFragment(`<style>
-
-  </style>`));
-}
-
 export function renderForm(
   data: FormilaOpts
 ) {
@@ -252,10 +246,7 @@ export function renderForm(
 }
 
 export function formilaSync(opts: FormilaOpts) {
-  return {
-    html: renderForm(opts),
-    style: renderFormStyle(),
-  };
+  return renderForm(opts);
 }
 
 export async function formila(opts: FormilaOpts) {
