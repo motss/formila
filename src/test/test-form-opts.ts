@@ -2,7 +2,7 @@
 
 import { FormilaData } from '..';
 
-export const shopPolymerFormOpts: FormilaData = {
+export const testFormOpts: FormilaData = {
   attr: {
     id: 'checkoutForm',
     class: 'shop-app__checkout-form',
@@ -361,3 +361,5 @@ export const shopPolymerFormOpts: FormilaData = {
   errorMessage: 'Checkout form contains invalid field',
   submitTitle: 'Place order',
 };
+
+export default testFormOpts;

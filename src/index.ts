@@ -1,7 +1,9 @@
 // @ts-check
 
 /** Import project dependencies */
+import htmlMinifier from 'html-minifier';
 import parse5 from 'parse5';
+import pretty from 'pretty';
 
 export type Omit<T, U> = Pick<T, Exclude<keyof T, U>>;
 export declare interface Attr {
@@ -35,12 +37,15 @@ export declare interface FormOptsSectionList extends Attr {
   fieldsetList?: FormOptsFieldsetList[];
 }
 
-export declare interface FormilaOpts extends Attr, TitleSubTitle {
+export declare interface FormilaData extends Attr, TitleSubTitle {
   hiddenList?: FormOptsHiddenList[];
   sectionList?: FormOptsSectionList[];
 
   errorMessage?: string;
   submitTitle?: string;
+}
+export declare interface FormilaOpts {
+  minify?: boolean;
 }
 
 export const ELEMENT_ID_REGEXP = /.*<(?:input|select)[\s\S]*\sid\=\"(.+?)\"[\s\S]*\>[\s\S]*/i;
@@ -190,11 +195,16 @@ function parseSectionList(sectionList: NonNullable<FormOptsSectionList[]>) {
 }
 
 export function renderForm(
-  data: FormilaOpts
+  data: FormilaData,
+  options?: FormilaOpts
 ) {
   if (data == null) {
     return '';
   }
+
+  const {
+    minify = true,
+  } = options || {} as FormilaOpts;
 
   const {
     attr,
@@ -208,49 +218,49 @@ export function renderForm(
     errorMessage,
     submitTitle,
   } = data;
-
-  return parse5.serialize(parse5.parseFragment(`<form ${attr == null ? '' : parseAttr(attr)}>
-  ${
-    title == null
-      ? ''
-      : `<h1 class="form__title">${title}</h1>`
+  const renderedForm = htmlMinifier.minify(parse5.serialize(parse5.parseFragment(`<form ${
+  attr == null ? '' : parseAttr(attr)
+}>
+${title == null ? '' : `<h1 class="form__title">${title}</h1>`}
+${subtitle == null ? '' : `<p class="form_subtitle">${subtitle}</p>`}
+${
+  Array.isArray(hiddenList) && hiddenList.length > 0
+    ? parseHiddenList(hiddenList)
+    : ''
+}
+${
+  Array.isArray(sectionList) && sectionList.length > 0
+    ? `<div class="form__body">${parseSectionList(sectionList)}</div>`
+    : ''
   }
-  ${
-    subtitle == null
-      ? ''
-      : `<p class="form_subtitle">${subtitle}</p>`
-  }
-
-  ${
-    Array.isArray(hiddenList) && hiddenList.length > 0
-      ? parseHiddenList(hiddenList)
-      : ''
-  }
-
-  ${
-    Array.isArray(sectionList) && sectionList.length > 0
-      ? `<div class="form__body">${parseSectionList(sectionList)}</div>`
-      : ''
-  }
-
-  ${
-    errorMessage == null
-      ? ''
-      : `<div class="form__error-msg" role="alert" aria-hidden="true">${errorMessage}</div>`
-  }
-
+${
+  errorMessage == null
+    ? ''
+    : `<div class="form__error-msg" role="alert" aria-hidden="true">${errorMessage}</div>`
+}
   <div class="buttons-container">
     <button type="submit">${submitTitle == null ? 'Submit' : submitTitle}</button>
   </div>
-</form>`));
+</form>`)), {
+  collapseBooleanAttributes: true,
+  collapseWhitespace: true,
+  minifyCSS: true,
+  minifyJS: true,
+  removeRedundantAttributes: true,
+  removeScriptTypeAttributes: true,
+  removeStyleLinkTypeAttributes: true,
+  sortAttributes: true,
+});
+
+  return minify ? renderedForm : pretty(renderedForm) ;
 }
 
-export function formilaSync(opts: FormilaOpts) {
-  return renderForm(opts);
+export function formilaSync(data: FormilaData, options?: FormilaOpts) {
+  return renderForm(data, options);
 }
 
-export async function formila(opts: FormilaOpts) {
-  return formilaSync(opts);
+export async function formila(data: FormilaData, options?: FormilaOpts) {
+  return formilaSync(data, options);
 }
 
 export default formila;

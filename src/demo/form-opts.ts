@@ -1,8 +1,8 @@
 // @ts-check
 
-import { FormilaOpts } from '..';
+import { FormilaData } from '..';
 
-export const formOpts: FormilaOpts = {
+export const formOpts: FormilaData = {
   attr: {
     class: 'quote-form',
     method: 'post',
