@@ -105,8 +105,8 @@ This methods works the same as `greeting(name)` except that this is the synchron
 [mit-license-badge]: https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square
 [coc-badge]: https://img.shields.io/badge/code%20of-conduct-ff69b4.svg?style=flat-square
 
-[travis-badge]: https://img.shields.io/travis/motss/@motss/formila.svg?style=flat-square
-[daviddm-badge]: https://img.shields.io/david/motss/@motss/formila.svg?style=flat-square
+[travis-badge]: https://img.shields.io/travis/motss/formila.svg?style=flat-square
+[daviddm-badge]: https://img.shields.io/david/motss/formila.svg?style=flat-square
 [nsp-badge]: https://nodesecurity.io/orgs/motss/projects/<PROJECT_ID>/badge?style=flat-square
 
 [codebeat-badge]: https://codebeat.co/badges/<PROJECT_ID>?style=flat-square
@@ -117,12 +117,12 @@ This methods works the same as `greeting(name)` except that this is the synchron
 
 [version-url]: https://www.npmjs.com/package/@motss/formila
 [downloads-url]: http://www.npmtrends.com/@motss/formila
-[mit-license-url]: https://github.com/motss/@motss/formila/blob/master/LICENSE
-[coc-url]: https://github.com/motss/@motss/formila/blob/master/CODE_OF_CONDUCT.md
+[mit-license-url]: https://github.com/motss/formila/blob/master/LICENSE
+[coc-url]: https://github.com/motss/formila/blob/master/CODE_OF_CONDUCT.md
 
-[travis-url]: https://travis-ci.org/motss/@motss/formila
-[daviddm-url]: https://david-dm.org/motss/@motss/formila
+[travis-url]: https://travis-ci.org/motss/formila
+[daviddm-url]: https://david-dm.org/motss/formila
 [nsp-url]: https://nodesecurity.io/orgs/motss/projects/<PROJECT_ID>
 
 [codebeat-url]: https://codebeat.co/projects/github-com-motss-@motss/formila-master
-[codacy-url]: https://www.codacy.com/app/motss/@motss/formila?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/@motss/formila&amp;utm_campaign=Badge_Grade
+[codacy-url]: https://www.codacy.com/app/motss/formila?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/@motss/formila&amp;utm_campaign=Badge_Grade
