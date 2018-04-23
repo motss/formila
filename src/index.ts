@@ -50,10 +50,8 @@ export declare interface FormilaOpts {
 
 export const ELEMENT_ID_REGEXP = /.*<(?:input|select)[\s\S]*\sid\=\"(.+?)\"[\s\S]*\>[\s\S]*/i;
 
-function parseAttr(attr: NonNullable<Attr>, omit?: string|string[]) {
-  const parsedOmit = omit == null
-    ? []
-    : Array.isArray(omit) ? omit : [omit];
+function parseAttr(attr: NonNullable<Attr>, omit: string[]) {
+  const parsedOmit = omit == null ? [] : omit;
 
   return parse5.serialize(parse5.parseFragment(
     Object.keys(attr)
@@ -119,7 +117,7 @@ function parseElementList(
 
     return `<div class="form__label-container ${
       n.attr == null || n.attr.class == null ? '' : n.attr.class
-    }" ${n.attr == null ? '' : parseAttr(n.attr, 'class')}>
+    }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>
       <label for="${elementId}">
         ${n.title == null ? '' : `<div class="input-title">${n.title}</div>`}
 
@@ -156,7 +154,7 @@ function parseFieldsetList(fieldsetList: NonNullable<FormOptsFieldsetList[]>) {
   return fieldsetList.map((n) => {
     return `<fieldset class="form_fieldset ${
       n.attr == null || n.attr.class == null ? '' : n.attr.class
-    }" ${n.attr == null ? '' : parseAttr(n.attr, 'class')}>
+    }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>
       ${n.title == null ? '' : `<legend class="form-fieldset__title">${n.title}</legend>`}
       ${n.subtitle == null ? '' : `<p class="form-fieldset__subtitle">${n.subtitle}</p>`}
 
