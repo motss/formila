@@ -44,11 +44,11 @@ jobs:
           paths:
             - ~/.npm/_cacache
 
-  node-v6:
+  node-v8:
     <<: *node-base
     docker:
       - image: node:8
-  node-v6:
+  node-v9:
     <<: *node-base
     docker:
       - image: node:9
