@@ -50,7 +50,7 @@ export declare interface FormilaOpts {
 
 export const ELEMENT_ID_REGEXP = /.*<(?:input|select)[\s\S]*\sid\=\"(.+?)\"[\s\S]*\>[\s\S]*/i;
 
-function parseAttr(attr: NonNullable<Attr>, omit: string[]) {
+function parseAttr(attr: NonNullable<Attr>, omit?: string[]) {
   const parsedOmit = omit == null ? [] : omit;
 
   return parse5.serialize(parse5.parseFragment(
@@ -183,7 +183,7 @@ function parseSectionList(sectionList: NonNullable<FormOptsSectionList[]>) {
   return sectionList.map((n) => {
     return `<section class="form__section ${
       n.attr == null || n.attr.class == null ? '' : n.attr.class
-    }" ${n.attr == null ? '' : parseAttr(n.attr, 'class')}>${
+    }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>${
       Array.isArray(n.fieldsetList) && n.fieldsetList.length > 0
         ? parseFieldsetList(n.fieldsetList)
         : ''
