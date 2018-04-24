@@ -14,26 +14,19 @@
 [![Code of Conduct][coc-badge]][coc-url]
 
 [![Build Status][travis-badge]][travis-url]
+[![CircleCI][circleci-badge]][circleci-url]
 [![Dependency Status][daviddm-badge]][daviddm-url]
 [![NSP Status][nsp-badge]][nsp-url]
+[![codecov][codecov-badge]][codecov-url]
+[![Coverage Status][coveralls-badge]][coveralls-url]
 
 [![codebeat-badge]][codebeat-url]
 [![codacy-badge]][codacy-url]
 
-> Better greeting message
+> Server-rendering HTML forms with just plain JS object or with JSON object. Do note that not every rough edges are covered. This package can be helpful in making you a little bit more productive if you find yourself dealing with many different HTML forms quite often. Enjoy! :smiley:
 
 ## Table of contents
 
-- [Pre-requisite](#pre-requisite)
-- [Setup](#setup)
-  - [Install](#install)
-  - [Usage](#usage)
-    - [Node.js](#nodejs)
-    - [Native ES modules or TypeScript](#native-es-modules-or-typescript)
-- [API Reference](#api-reference)
-  - [greeting(name)](#greetingname)
-  - [greetingSync(name)](#greetingsyncname)
-- [License](#license)
 
 ## Pre-requisites
 
@@ -54,7 +47,7 @@ $ npm install --save @motss/formila
 #### Node.js
 
 ```js
-const greeting = require('@motss/formila');
+const { formila } = require('@motss/formila');
 ```
 
 #### Native ES modules or TypeScript
@@ -62,7 +55,6 @@ const greeting = require('@motss/formila');
 ```ts
 // @ts-check
 
-import greeting from '@motss/formila';
 ```
 
 ## API Reference
@@ -106,11 +98,14 @@ This methods works the same as `greeting(name)` except that this is the synchron
 [coc-badge]: https://img.shields.io/badge/code%20of-conduct-ff69b4.svg?style=flat-square
 
 [travis-badge]: https://img.shields.io/travis/motss/formila.svg?style=flat-square
+[circleci-badge]: https://circleci.com/gh/motss/formila/tree/master.svg?style=svg
 [daviddm-badge]: https://img.shields.io/david/motss/formila.svg?style=flat-square
-[nsp-badge]: https://nodesecurity.io/orgs/motss/projects/<PROJECT_ID>/badge?style=flat-square
+[nsp-badge]: https://nodesecurity.io/orgs/motss/projects/89c87d68-eed8-4a67-804d-f92aefaf8ec7/badge
+[codecov-badge]: https://codecov.io/gh/motss/formila/branch/master/graph/badge.svg
+[coveralls-badge]: https://coveralls.io/repos/github/motss/formila/badge.svg?branch=master
 
-[codebeat-badge]: https://codebeat.co/badges/<PROJECT_ID>?style=flat-square
-[codacy-badge]: https://api.codacy.com/project/badge/Grade/<PROJECT_ID>?style=flat-square
+[codebeat-badge]: https://codebeat.co/badges/8ecb4520-072a-42ff-a609-6047902a64ef
+[codacy-badge]: https://api.codacy.com/project/badge/Grade/f20ac8478b7a4d6783288af9521c8876
 
 <!-- Links -->
 [nodei-url]: https://nodei.co/npm/@motss/formila
@@ -121,8 +116,11 @@ This methods works the same as `greeting(name)` except that this is the synchron
 [coc-url]: https://github.com/motss/formila/blob/master/CODE_OF_CONDUCT.md
 
 [travis-url]: https://travis-ci.org/motss/formila
+[circleci-url]: https://circleci.com/gh/motss/formila/tree/master
 [daviddm-url]: https://david-dm.org/motss/formila
-[nsp-url]: https://nodesecurity.io/orgs/motss/projects/<PROJECT_ID>
+[nsp-url]: https://nodesecurity.io/orgs/motss/projects/89c87d68-eed8-4a67-804d-f92aefaf8ec7
+[codecov-url]: https://codecov.io/gh/motss/formila
+[coveralls-url]: https://coveralls.io/github/motss/formila?branch=master
 
-[codebeat-url]: https://codebeat.co/projects/github-com-motss-@motss/formila-master
-[codacy-url]: https://www.codacy.com/app/motss/formila?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/@motss/formila&amp;utm_campaign=Badge_Grade
+[codebeat-url]: https://codebeat.co/projects/github-com-motss-formila-master
+[codacy-url]: https://www.codacy.com/app/motss/formila?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/formila&amp;utm_campaign=Badge_Grade
