@@ -27,6 +27,19 @@
 
 ## Table of contents
 
+- [Table of contents](#table-of-contents)
+- [Pre-requisites](#pre-requisites)
+- [Setup](#setup)
+  - [Install](#install)
+  - [Usage](#usage)
+    - [Node.js](#nodejs)
+    - [Native ES modules or TypeScript](#native-es-modules-or-typescript)
+- [API Reference](#api-reference)
+  - [FormilaData](#formiladata)
+  - [FormilaOpts](#formilaopts)
+  - [formila(data[, options])](#formiladata-options)
+  - [formilaSync(data[, options])](#formilasyncdata-options)
+- [License](#license)
 
 ## Pre-requisites
 
@@ -48,6 +61,65 @@ $ npm install --save @motss/formila
 
 ```js
 const { formila } = require('@motss/formila');
+
+const testForm = {
+  // attr: {}, // Attributes
+  title: 'Test title',
+  subtitle: 'Test subtitle',
+
+  hiddenList: [
+    {
+      name: '_csrf',
+      value: '8601779472171008',
+    },
+  ],
+
+  sectionList: [
+    {
+      // attr: {}, // Attributes
+      fieldsetList: [
+        {
+          // attr: {}, // Attributes
+          title: 'Personal Information',
+          subtitle: 'Particulars',
+          fieldList: [
+            {
+              // attr: {}, // Attributes
+              elementList: [
+                {
+                  title: 'Email',
+                  fieldTag: `<input id="email"
+                  type="email"
+                  name="email">`,
+                  description: 'Enter your email',
+                  errorMessage: 'Invalid email',
+                },
+              ],
+              // Non-validatable (input, select) elements
+              // nonElementList: [
+              //   '<div>Email:</div><div></div>',
+              // ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+
+  errorMessage: 'Form contains invalid field',
+  submitTitle: 'Next',
+};
+
+async function main() {
+  try {
+    // const options = { minify: true };
+    const renderedForm = await formila(testForm/** options */);
+
+    return renderedForm;
+  } catch (e) {
+    console.error('Error rendering form', e);
+  }
+}
 ```
 
 #### Native ES modules or TypeScript
@@ -55,18 +127,110 @@ const { formila } = require('@motss/formila');
 ```ts
 // @ts-check
 
+import { formila, FormilaData, FormilaOpts } from '@motss/formila';
+
+const testForm: FormilaData = {
+  // attr: {}, // Attributes
+  title: 'Test title',
+  subtitle: 'Test subtitle',
+
+  hiddenList: [
+    {
+      name: '_csrf',
+      value: '8601779472171008',
+    },
+  ],
+
+  sectionList: [
+    {
+      // attr: {}, // Attributes
+      fieldsetList: [
+        {
+          // attr: {}, // Attributes
+          title: 'Personal Information',
+          subtitle: 'Particulars',
+          fieldList: [
+            {
+              // attr: {}, // Attributes
+              elementList: [
+                {
+                  title: 'Email',
+                  fieldTag: `<input id="email"
+                  type="email"
+                  name="email">`,
+                  description: 'Enter your email',
+                  errorMessage: 'Invalid email',
+                },
+              ],
+              // Non-validatable (input, select) elements
+              // nonElementList: [
+              //   '<div>Email:</div><div></div>',
+              // ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+
+  errorMessage: 'Form contains invalid field',
+  submitTitle: 'Next',
+};
+
+async function main() {
+  try {
+    // const options: FormilaOpts = { minify: true };
+    const renderedForm = await formila(testForm/** options */);
+
+    return renderedForm;
+  } catch (e) {
+    console.error('Error rendering form', e);
+  }
+}
 ```
 
 ## API Reference
 
-### greeting(name)
+### FormilaData
 
-- `name` <[string][string-mdn-url]> Name of the person to greet at.
-- returns: <[Promise][promise-mdn-url]&lt;[string][string-mdn-url]&gt;> Promise which resolves with a greeting message.
+- `attr` <[Object?][object-mdn-url]> Optional form attributes, e.g. `{ id: 'checkoutForm', class: 'form__checkout' }`.
+- `title` <[string?][string-mdn-url]> Optional form title.
+- `subtitle` <[string?][string-mdn-url]> Optional form subtitle.
+- `hiddenList` <[Array?][array-mdn-url]&lt;[Object][object-mdn-url]&gt;> Optional list of hidden elements in the form.
+  - `name` <[string][string-mdn-url]> Name of the hidden form element, e.g. `_csrf`.
+  - `value` <[string][string-mdn-url]> Value of the hidden form element, e.g. `5976446363238400`.
+- `sectionList` <[Array?][array-mdn-url]&lt;[Object][object-mdn-url]&gt;> Optional list of sections.
+  - `attr` <[Object?][object-mdn-url]> Optional section attributes.
+  - `fieldsetList` <[Array?][array-mdn-url]&lt;[Object][object-mdn-url]&gt;> Optional list of fieldsets.
+    - `attr` <[Object?][object-mdn-url]> Optional fieldset attributes.
+    - `title` <[string?][string-mdn-url]> Optional fieldset title.
+    - `subtitle` <[string?][string-mdn-url]> Optional fieldset subtitle.
+    - `fieldList` <[Array?][array-mdn-url]&lt;[Object][object-mdn-url]&gt;> Optional list of fields.
+      - `elementList` <[Array?][array-mdn-url]&lt;[Object][object-mdn-url]&gt;> Optional list of validatable elements such as `<input>` and `<select>` elements.
+        - `attr` <[Object?][object-mdn-url]> Optional field attributes.
+        - `title` <[string?][string-mdn-url]> Optional field title, e.g. `Email`.
+        - `fieldTag` <[string?][string-mdn-url]> HTML `<input>` or `<select>` element. The element must have the attribute `id` set, e.g. `<input id="email" type="email" name="email">`.
+        - `description` <[string?][string-mdn-url]> Optional field description, e.g. `Enter your valid email address`.
+        - `errorMessage` <[string?][string-mdn-url]> Optional error message when the field is invalid, e.g. `Invalid email`.
+      - `nonElementList` <[Array?][array-mdn-url]&lt;[string][string-mdn-url]&gt;> Optional list of non-validatable elements.
+- `errorMessage` <[string?][string-mdn-url]> Optional error message of the form, e.g. `Form contains invalid field(s).`
+- `submitTitle` <[string?][string-mdn-url]> Optional title of the submit button. Defaults to `Submit`.
 
-### greetingSync(name)
+### FormilaOpts
 
-This methods works the same as `greeting(name)` except that this is the synchronous version.
+- `minify` <[boolean?][boolean-mdn-url]> Optional flag to minify rendered HTML form. Defaults to `true`.
+
+___
+
+### formila(data[, options])
+
+- `data` <[FormilaData][formiladata-url]> Form data.
+- `options` <[FormilaOpts?][formilaopts-url]> Optional configuration to render the HTML form.
+- returns: <[Promise][promise-mdn-url]&lt;[string][string-mdn-url]&gt;> Promise which resolves with rendered HTML form.
+
+### formilaSync(data[, options])
+
+This methods works the same as `formila([options])` except that this is the synchronous version.
 
 ## License
 
@@ -77,6 +241,9 @@ This methods works the same as `greeting(name)` except that this is the synchron
 [nodejs-url]: https://nodejs.org
 [npm-url]: https://www.npmjs.com
 [node-releases-url]: https://nodejs.org/en/download/releases
+
+[formiladata-url]: #formiladata
+[formilaopts-url]: #formilaopts
 
 [array-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
 [boolean-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
