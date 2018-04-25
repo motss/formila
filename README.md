@@ -230,7 +230,7 @@ ___
 
 ### formilaSync(data[, options])
 
-This methods works the same as `formila([options])` except that this is the synchronous version.
+This methods works the same as `formila(data[, options])` except that this is the synchronous version.
 
 ## License
 
