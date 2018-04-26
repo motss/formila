@@ -53,17 +53,20 @@ export const ELEMENT_ID_REGEXP = /.*<(?:input|select)[\s\S]*\sid\=\"(.+?)\"[\s\S
 function parseAttr(attr: NonNullable<Attr>, omit?: string[]) {
   const parsedOmit = omit == null ? [] : omit;
 
-  return parse5.serialize(parse5.parseFragment(
-    Object.keys(attr)
-      .reduce<string[]>((p, n) => {
-        if (parsedOmit.length > 0 && parsedOmit.includes(n)) {
-          return p;
-        }
-
-        return p.concat(`${n}=${attr[n]}`);
-      }, [])
-      .join(' ')
-  ));
+  return parse5.serialize(
+    parse5.parseFragment(
+      Object.keys(attr)
+        .reduce<string[]>(
+          (p, n) => {
+            return parsedOmit.length > 0 && parsedOmit.includes(n)
+              ? p
+              : p.concat(`${n}=${attr[n]}`);
+          },
+          []
+        )
+        .join(' ')
+    )
+  );
 }
 
 function parseFieldTag(fieldTag: string, hasErrorMessage: boolean) {
@@ -98,69 +101,87 @@ function parseFieldTag(fieldTag: string, hasErrorMessage: boolean) {
 function parseElementList(
   elementList: NonNullable<FormOptsElementList[]>
 ) {
-  return elementList.map((n, i) => {
-    const parsedFieldTag = n.fieldTag == null
-      ? ''
-      : parseFieldTag(
-        n.fieldTag,
-        typeof n.errorMessage === 'string' && n.errorMessage.length > 0
-      );
-    const hasParsedFieldTag = typeof parsedFieldTag === 'string' && parsedFieldTag.length > 0;
+  return elementList
+    .map((n, i) => {
+      const parsedFieldTag = n.fieldTag == null
+        ? ''
+        : parseFieldTag(
+          n.fieldTag,
+          typeof n.errorMessage === 'string' && n.errorMessage.length > 0
+        );
+      const hasParsedFieldTag = typeof parsedFieldTag === 'string' && parsedFieldTag.length > 0;
 
-    if (hasParsedFieldTag && !ELEMENT_ID_REGEXP.test(parsedFieldTag)) {
-      throw new Error(
-        `Missing required attribute 'id' in elementList[${i}] (${n.fieldTag})`
-      );
-    }
+      if (hasParsedFieldTag && !ELEMENT_ID_REGEXP.test(parsedFieldTag)) {
+        throw new Error(
+          `Missing required attribute 'id' in elementList[${i}] (${n.fieldTag})`
+        );
+      }
 
-    const elementId = hasParsedFieldTag ? parsedFieldTag.replace(ELEMENT_ID_REGEXP, '$1') : '';
+      const elementId = hasParsedFieldTag ? parsedFieldTag.replace(ELEMENT_ID_REGEXP, '$1') : '';
 
-    return `<div class="form__label-container ${
-      n.attr == null || n.attr.class == null ? '' : n.attr.class
-    }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>
-      <label for="${elementId}">
-        ${n.title == null ? '' : `<div class="input-title">${n.title}</div>`}
-
+      return `<div class="form__label-container ${
+        n.attr == null || n.attr.class == null ? '' : n.attr.class
+      }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>
+        <label for="${elementId}">
+        ${
+          n.title == null
+            ? ''
+            : `<div class="input-title">${n.title}</div>`
+        }
         ${
           hasParsedFieldTag
             ? `<div class="input-container">${parsedFieldTag}</div>`
             : ''
         }
-
         ${
-          n.description == null
-            ? ''
-            : `<div class="input-description">${n.description}</div>`
+        n.description == null
+          ? ''
+          : `<div class="input-description">${n.description}</div>`
         }
-
         ${
           n.errorMessage == null
             ? ''
             : `<div class="error-msg" role="alert" aria-hidden="true">${n.errorMessage}</div>`
         }
-      </label>
-    </div>`;
-  })
+        </label>
+      </div>`;
+    })
     .join('');
 }
 
 function parseHiddenList(hiddenList: NonNullable<FormOptsHiddenList[]>) {
   return `<fieldset class="form__fieldset-hidden">${
-    hiddenList.map(n => `<input type="hidden" name="${n.name}" value="${n.value}">`).join('')
+    hiddenList
+      .map(n => `<input type="hidden" name="${n.name}" value="${n.value}">`)
+      .join('')
   }</fieldset>`;
 }
 
 function parseFieldsetList(fieldsetList: NonNullable<FormOptsFieldsetList[]>) {
   return fieldsetList.map((n) => {
     return `<fieldset class="form_fieldset ${
-      n.attr == null || n.attr.class == null ? '' : n.attr.class
-    }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>
-      ${n.title == null ? '' : `<legend class="form-fieldset__title">${n.title}</legend>`}
-      ${n.subtitle == null ? '' : `<p class="form-fieldset__subtitle">${n.subtitle}</p>`}
-
-      ${
-        Array.isArray(n.fieldList) && n.fieldList.length > 0
-          ? n.fieldList.map((fn) => {
+      n.attr == null || n.attr.class == null
+        ? ''
+        : n.attr.class
+    }" ${
+      n.attr == null
+        ? ''
+        : parseAttr(n.attr, ['class'])
+    }>
+    ${
+      n.title == null
+        ? ''
+        : `<legend class="form-fieldset__title">${n.title}</legend>`
+    }
+    ${
+      n.subtitle == null
+        ? ''
+        : `<p class="form-fieldset__subtitle">${n.subtitle}</p>`
+    }
+    ${
+      Array.isArray(n.fieldList) && n.fieldList.length > 0
+        ? n.fieldList
+          .map((fn) => {
             return `<div class="form-fieldset__field">${
               Array.isArray(fn.elementList) && fn.elementList.length > 0
                 ? parseElementList(fn.elementList)
@@ -171,24 +192,25 @@ function parseFieldsetList(fieldsetList: NonNullable<FormOptsFieldsetList[]>) {
                   : ''
             }</div>`;
           })
-            .join('')
-          : ''
-      }
+          .join('')
+        : ''
+    }
     </fieldset>`;
   })
     .join('');
 }
 
 function parseSectionList(sectionList: NonNullable<FormOptsSectionList[]>) {
-  return sectionList.map((n) => {
-    return `<section class="form__section ${
-      n.attr == null || n.attr.class == null ? '' : n.attr.class
-    }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>${
-      Array.isArray(n.fieldsetList) && n.fieldsetList.length > 0
-        ? parseFieldsetList(n.fieldsetList)
-        : ''
-    }</section>`;
-  })
+  return sectionList
+    .map((n) => {
+      return `<section class="form__section ${
+        n.attr == null || n.attr.class == null ? '' : n.attr.class
+      }" ${n.attr == null ? '' : parseAttr(n.attr, ['class'])}>${
+        Array.isArray(n.fieldsetList) && n.fieldsetList.length > 0
+          ? parseFieldsetList(n.fieldsetList)
+          : ''
+      }</section>`;
+    })
     .join('');
 }
 
@@ -216,41 +238,46 @@ export function renderForm(
     errorMessage,
     submitTitle,
   } = data;
-  const renderedForm = htmlMinifier.minify(parse5.serialize(parse5.parseFragment(`<form ${
-  attr == null ? '' : parseAttr(attr)
-}>
-${title == null ? '' : `<h1 class="form__title">${title}</h1>`}
-${subtitle == null ? '' : `<p class="form_subtitle">${subtitle}</p>`}
-${
-  Array.isArray(hiddenList) && hiddenList.length > 0
-    ? parseHiddenList(hiddenList)
-    : ''
-}
-${
-  Array.isArray(sectionList) && sectionList.length > 0
-    ? `<div class="form__body">${parseSectionList(sectionList)}</div>`
-    : ''
-  }
-${
-  errorMessage == null
-    ? ''
-    : `<div class="form__error-msg" role="alert" aria-hidden="true">${errorMessage}</div>`
-}
-  <div class="buttons-container">
-    <button type="submit">${submitTitle == null ? 'Submit' : submitTitle}</button>
-  </div>
-</form>`)), {
-  collapseBooleanAttributes: true,
-  collapseWhitespace: true,
-  minifyCSS: true,
-  minifyJS: true,
-  removeRedundantAttributes: true,
-  removeScriptTypeAttributes: true,
-  removeStyleLinkTypeAttributes: true,
-  sortAttributes: true,
-});
+  const renderedForm = htmlMinifier.minify(
+    parse5.serialize(
+      parse5.parseFragment(
+        `<form ${attr == null ? '' : parseAttr(attr)}>
+          ${title == null ? '' : `<h1 class="form__title">${title}</h1>`}
+          ${subtitle == null ? '' : `<p class="form_subtitle">${subtitle}</p>`}
+          ${
+            Array.isArray(hiddenList) && hiddenList.length > 0
+              ? parseHiddenList(hiddenList)
+              : ''
+          }
+          ${
+            Array.isArray(sectionList) && sectionList.length > 0
+              ? `<div class="form__body">${parseSectionList(sectionList)}</div>`
+              : ''
+          }
+          ${
+            errorMessage == null
+              ? ''
+              : `<div class="form__error-msg" role="alert" aria-hidden="true">${errorMessage}</div>`
+          }
+          <div class="buttons-container">
+            <button type="submit">${submitTitle == null ? 'Submit' : submitTitle}</button>
+          </div>
+        </form>`
+      )
+    ),
+    {
+      collapseBooleanAttributes: true,
+      collapseWhitespace: true,
+      minifyCSS: true,
+      minifyJS: true,
+      removeRedundantAttributes: true,
+      removeScriptTypeAttributes: true,
+      removeStyleLinkTypeAttributes: true,
+      sortAttributes: true,
+    }
+  );
 
-  return minify ? renderedForm : pretty(renderedForm) ;
+  return minify ? renderedForm : pretty(renderedForm);
 }
 
 export function formilaSync(data: FormilaData, options?: FormilaOpts) {
