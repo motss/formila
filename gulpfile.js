@@ -2,14 +2,14 @@ const { writeFile } = require('fs');
 const gulp = require('gulp');
 const CleanCss = require('clean-css');
 const vinylMap = require('vinyl-map');
-const builder = require('@messageflow/build').builder({ ignores: ['test*'] });
+const builder = require('@messageflow/build').builder({
+  dist: '.',
+  cleanGlobs: ['./*.js', './*.d.ts', '!./gulpfile.js', '!**/json.d.ts'],
+  ignores: process.env.NODE_ENV === 'production' ? ['**/demo', '**/test'] : []
+});
 
 function minifyCss(buff, filename) {
-  return new CleanCss({
-    level: 2,
-  })
-    .minify(buff.toString())
-    .styles;
+  return new CleanCss({ level: 2 }).minify(buff.toString()).styles;
 }
 
 gulp.task('css', () => {
@@ -17,7 +17,7 @@ gulp.task('css', () => {
     'src/*.css',
   ])
     .pipe(vinylMap(minifyCss))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('.'));
 });
 gulp.task('demo', () => {
   return gulp.src([
