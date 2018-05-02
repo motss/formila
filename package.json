@@ -1,7 +1,6 @@
 {
   "name": "@motss/formila",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.0.1",
   "description": "What if you could SSR HTML form with Node.js",
   "keywords": [
     "@motss/formila",
